@@ -45,8 +45,8 @@ print("Command line args:",vars(args))
 print("##### Define inputs #####")
 
 print(os.getcwd())
-assert os.getcwd().endswith("icenet/standalone/scripts"), \
-    "You must execute this script from within the 'icenet/standalone/scripts' dir!"
+assert os.getcwd().endswith("LowPtElectronsPlots/scripts"), \
+    "You must execute this script from within the 'LowPtElectronsPlots/scripts' dir!"
 
 # I/O directories
 input_data='../data'
@@ -63,7 +63,9 @@ print("output_base:",output_base)
 files = [
    #input_data+'/images_orig.root'
    #input_data+'/images_phiq.root'
-   input_data+'/images_phiq_ref.root'
+   #input_data+'/images_phiq_ref.root'
+   #'/Users/bainbrid/Desktop/output_5.root'
+   input_data+'/temp_miniaod_test.root',
    ]
 
 ################################################################################
@@ -276,7 +278,7 @@ if True :
 ################################################################################
 print("##### Engineered variables #####")
 
-if True :
+if False :
 
    # min, max, and diff or eta and phi
    histos = {
