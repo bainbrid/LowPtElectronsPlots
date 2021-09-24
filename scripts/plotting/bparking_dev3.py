@@ -27,8 +27,6 @@ def bparking_dev3(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
 
    TRK_DENOM = True
 
-   threshold = 1.e-1
-
    #############
    # ROC CURVE #
    #############
@@ -173,9 +171,9 @@ def bparking_dev3(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
 
    has_high = has_ele & (test.trk_pt>2.0)
    denom = has_obj&test.is_e; numer = has_high&denom;
-   ele_eff = float(numer.sum()) #/ float(denom.sum()) if float(denom.sum()) > 0. else 0.
+   ele_eff = float(numer.sum()) / float(denom.sum()) if float(denom.sum()) > 0. else 0.
    denom = has_obj&(~test.is_e); numer = has_high&denom;
-   ele_fr = float(numer.sum()) #/ float(denom.sum()) if float(denom.sum()) > 0. else 0.
+   ele_fr = float(numer.sum()) / float(denom.sum()) if float(denom.sum()) > 0. else 0.
    plt.plot([ele_fr], [ele_eff],
             marker='^', markerfacecolor='none', markeredgecolor='blue', 
             markersize=8,linestyle='none',
