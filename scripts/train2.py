@@ -82,11 +82,11 @@ print("output_base:",output_base)
    
 files = [
    #input_data+'/output.LATEST.root', # 1,797,425 entries
-   #input_data+'/2020May20/output_'+['aod.root','aod_test.root','miniaod.root','miniaod_test.root'][3]
+   input_data+'/2020May20/output_'+['aod.root','aod_test.root','miniaod.root','miniaod_test.root'][0]
    #input_data+'/temp_'+['miniaod.root','miniaod_test.root'][1]
    #input_data+'/output_numEvent1000.root'
    #input_data+'/test_nonres_med/output_0.root',
-   input_data+'/output_0.root',
+   #input_data+'/output_0.root',
    #input_data+'/output_1.root',
    #input_data+'/output_2.root',
    #input_data+'/output_3.root',
@@ -127,8 +127,9 @@ additional = [
    'trk_pt','trk_eta','trk_charge','trk_dr',
    'gsf_pt','gsf_eta','gsf_dr','gsf_bdtout2','gsf_mode_pt',
    'ele_pt','ele_eta','ele_dr',
-   'ele_mva_value','ele_mva_value_old','ele_mva_value_retrained',
-   'ele_mva_value_depth10','ele_mva_value_depth11','ele_mva_value_depth13','ele_mva_value_depth15',
+   'ele_mva_value',
+   #@@'ele_mva_value_old','ele_mva_value_retrained',
+   #@@'ele_mva_value_depth10','ele_mva_value_depth11','ele_mva_value_depth13','ele_mva_value_depth15',
    'evt','weight','rho',
    'tag_pt','tag_eta',
    'gsf_dxy','gsf_dz','gsf_nhits','gsf_chi2red',
@@ -202,8 +203,8 @@ print("gsf_pt:      "," ".join(["{:6.3f}".format(x) for x in data.gsf_pt if x > 
 print("gsf_mode_pt: "," ".join(["{:6.3f}".format(x) for x in data.gsf_mode_pt if x > -10.][:10]))
 
 # Filter based on tag muon pT and eta
-tag_muon_pt = 7.
-tag_muon_eta = 1.5
+tag_muon_pt = 5. #@@
+tag_muon_eta = 2.5 #@@
 print("Tag-side muon req, pT threshold:   ",tag_muon_pt)
 print("Tag-side muon req, eta threshold:  ",tag_muon_eta)
 print("Pre  tag-side muon req, data.shape:",data.shape)
@@ -413,8 +414,8 @@ AxE = True
 
 # Reproduces Mauro's plot of ROC curves 
 
-#from plotting.mauro import mauro
-#mauro("../output/plots_train2/mauro",test,egamma,has_pfgsf_branches=has_pfgsf_branches,AxE=AxE)
+from plotting.mauro import mauro
+mauro("../output/plots_train2/mauro",test,egamma,has_pfgsf_branches=has_pfgsf_branches,AxE=AxE)
 
 # My Original plotting scripts 
 
@@ -468,5 +469,5 @@ AxE = True
 #from plotting.bparking_dev4 import bparking_dev4
 #bparking_dev4("../output/plots_train2/bparking_dev4",test,egamma,has_pfgsf_branches=has_pfgsf_branches,AxE=AxE)
 
-from plotting.bparking_dev5 import bparking_dev5
-bparking_dev5("../output/plots_train2/bparking_dev5",test,egamma,has_pfgsf_branches=has_pfgsf_branches,AxE=AxE)
+#from plotting.bparking_dev5 import bparking_dev5
+#bparking_dev5("../output/plots_train2/bparking_dev5",test,egamma,has_pfgsf_branches=has_pfgsf_branches,AxE=AxE)
