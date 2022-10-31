@@ -1,3 +1,5 @@
+1)
+
 Coverage of Error Bars for Poisson Data.pdf
 Unified 68.27% intervals
 Coverage of Error Bars for Poisson Data
@@ -16,6 +18,8 @@ n    low    high   diff
 8 5.3012 11.3187 6.0175
 9 6.3342 12.7905 6.4562
 
+2)
+
 https://twiki.cern.ch/twiki/bin/viewauth/CMS/PoissonErrorBars
 "These "correct coverage" vertical bars, first derived by Garwood in
 1936, are obtained from the Neyman construction using the central
@@ -23,7 +27,21 @@ interval convention. For N=0 the lower boundary of the bar is of
 course zero, and the upper boundary follows the same recipe as for
 N>0. Note that asymmetric Poisson error bars in RooFit will return for
 N=0 an upper bound at 1.2 events, while the recipe we recommend is the
-one below, which returns about 1.8 events."
+one below, which returns about 1.8 events." [See TWiki for code, which
+returns the values below.]
+
+central:  0.00 lower:  0.00, upper:  1.84
+central:  1.00 lower:  0.00, upper:  1.84
+central:  2.00 lower:  0.83, upper:  2.30
+central:  3.00 lower:  1.29, upper:  2.64
+central:  4.00 lower:  1.63, upper:  2.92
+central:  5.00 lower:  1.91, upper:  3.16
+central:  6.00 lower:  2.16, upper:  3.38
+central:  7.00 lower:  2.38, upper:  3.58
+central:  8.00 lower:  2.58, upper:  3.77
+central:  9.00 lower:  2.77, upper:  3.95
+
+3)
 
 Email: "poisson", 13 July 2011, Henning Flaecher:
 Page 100 of BaBar statistics report:
@@ -42,8 +60,6 @@ n n-dn n+dn
 7 4.14 9.61
 8 4.97 10.8
 9 5.81 12.0
-
- 
  
 
 
