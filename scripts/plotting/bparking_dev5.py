@@ -88,7 +88,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                id_tpr*eff,
                linestyle='solid', color='purple', linewidth=1.0,
                label='2020Sep15 (AUC={:.3f})'.format(id_auc))
-   
+
       colour = 'purple'
       for threshold in np.arange(2,17) :
          idx = np.abs(id_score-float(threshold/2.)).argmin()
@@ -99,7 +99,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
             plt.text(x, y+offset, f"{threshold/2.:.1f}", fontsize=fs, ha='center', va='center', clip_on=True, color=colour )
          else :
             plt.plot([x], [y], marker='o', markerfacecolor='white', markeredgecolor=colour, markersize=mss)
-   
+
       id_branch = 'ele_mva_value'
       id_fpr,id_tpr,id_score = roc_curve(test.is_e[has_ele],test[id_branch][has_ele])
       id_auc = roc_auc_score(test.is_e[has_ele],test[id_branch][has_ele]) if len(set(test.is_e[has_ele])) > 1 else 0.
@@ -107,7 +107,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                id_tpr*eff,
                linestyle='solid', color='blue', linewidth=1.0,
                label='2019Aug07 (AUC={:.3f})'.format(id_auc))
-   
+
       colour = 'blue'
       for threshold in np.arange(2,14) :
          idx = np.abs(id_score-float(threshold/2.)).argmin()
@@ -118,7 +118,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
             plt.text(x, y+offset, f"{threshold/2.:.1f}", fontsize=fs, ha='center', va='center', clip_on=True, color=colour )
          else :
             plt.plot([x], [y], marker='o', markerfacecolor='white', markeredgecolor=colour, markersize=mss)
-   
+
       id_branch = 'ele_mva_value_old'
       id_fpr,id_tpr,id_score = roc_curve(test.is_e[has_ele],test[id_branch][has_ele])
       id_auc = roc_auc_score(test.is_e[has_ele],test[id_branch][has_ele]) if len(set(test.is_e[has_ele])) > 1 else 0.
@@ -126,7 +126,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                id_tpr*eff,
                linestyle='solid', color='orange', linewidth=1.0,
                label='2019Jul22 (AUC={:.3f})'.format(id_auc))
-   
+
       colour = 'orange'
       for threshold in np.arange(2,13) :
          idx = np.abs(id_score-float(threshold/2.)).argmin()
@@ -137,7 +137,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
             plt.text(x, y+offset, f"{threshold/2.:.1f}", fontsize=fs, ha='center', va='center', clip_on=True, color=colour )
          else :
             plt.plot([x], [y], marker='o', markerfacecolor='white', markeredgecolor=colour, markersize=mss)
-   
+
       id_branch = 'gsf_bdtout1'
       id_fpr,id_tpr,id_score = roc_curve(test.is_e[has_ele],test[id_branch][has_ele])
       id_auc = roc_auc_score(test.is_e[has_ele],test[id_branch][has_ele]) if len(set(test.is_e[has_ele])) > 1 else 0.
@@ -145,7 +145,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                id_tpr*eff,
                linestyle='solid', color='red', linewidth=1.0,
                label='Seeding (AUC={:.3f})'.format(id_auc))
-   
+
       colour = 'red'
       for threshold in np.arange(2,17) :
          idx = np.abs(id_score-float(threshold/2.)).argmin()
@@ -159,10 +159,10 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
 
       # PF electrons
       if TRK_DENOM :
-   
+
          has_trk = (egamma.has_trk) & (egamma.trk_pt>0.5) & (np.abs(egamma.trk_eta)<2.5)
          has_ele = (egamma.has_ele) & (egamma.ele_pt>0.5) & (np.abs(egamma.ele_eta)<2.5)
-   
+
          denom = has_trk&egamma.is_e; numer = has_ele&denom
          eff = float(numer.sum()) / float(denom.sum()) if float(denom.sum()) > 0. else 0.
          denom = has_trk&(~egamma.is_e); numer = has_ele&denom
@@ -171,7 +171,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                   marker='o', color='green', 
                   markersize=8, linestyle='none',
                   label='PF electron')
-   
+
          id_branch = 'ele_mva_value_retrained'
          id_fpr,id_tpr,id_score = roc_curve(egamma.is_e[has_ele],egamma[id_branch][has_ele])
          id_auc = roc_auc_score(egamma.is_e[has_ele],egamma[id_branch][has_ele]) if len(set(egamma.is_e[has_ele])) > 1 else 0.
@@ -179,7 +179,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                   id_tpr*eff,
                   linestyle='solid', color='green', linewidth=1.0,
                   label='Retrained ID (AUC={:.3f})'.format(id_auc))
-   
+
          colour = 'green'
          for threshold in np.arange(-1,8) :
             idx = np.abs(id_score-float(threshold/2.)).argmin()
@@ -195,7 +195,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
 
       ########################################
       # Electron (pT > 5.0 GeV)
-   
+
       has_high = has_ele & (test.trk_pt>5.0)
       denom = has_obj&test.is_e; numer = has_high&denom;
       eff = float(numer.sum()) / float(denom.sum()) if float(denom.sum()) > 0. else 0.
@@ -207,7 +207,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                label='pT(trk) > 5.0 GeV',
                )
       print("pT>5.0:",eff,fr)
-   
+
       id_branch = 'ele_mva_value_depth15'
       id_fpr,id_tpr,id_score = roc_curve(test.is_e[has_high],test[id_branch][has_high])
       id_auc = roc_auc_score(test.is_e[has_high],test[id_branch][has_high]) if len(set(test.is_e[has_high])) > 1 else 0.
@@ -215,7 +215,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                id_tpr*eff,
                linestyle='solid',color='purple',linewidth=1.0,
                )
-   
+
       colour = 'purple'
       for threshold in [-12,-8,-4,0,4,8,12,16] :
          idx = np.abs(id_score-float(threshold/2.)).argmin()
@@ -226,7 +226,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
             plt.text(x, y+offset, f"{threshold/2.:.1f}", fontsize=fs, ha='center', va='center', clip_on=True, color=colour )
          else :
             plt.plot([x], [y], marker='o', markerfacecolor='white', markeredgecolor=colour, markersize=mss)
-   
+
       id_branch = 'ele_mva_value'
       id_fpr,id_tpr,id_score = roc_curve(test.is_e[has_high],test[id_branch][has_high])
       id_auc = roc_auc_score(test.is_e[has_high],test[id_branch][has_high]) if len(set(test.is_e[has_high])) > 1 else 0.
@@ -234,7 +234,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                id_tpr*eff,
                linestyle='solid',color='blue',linewidth=1.0,
                )
-   
+
       colour = 'blue'
       for threshold in [-4,0,4,8,10,12] :
          idx = np.abs(id_score-float(threshold/2.)).argmin()
@@ -245,7 +245,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
             plt.text(x, y+offset, f"{threshold/2.:.1f}", fontsize=fs, ha='center', va='center', clip_on=True, color=colour )
          else :
             plt.plot([x], [y], marker='o', markerfacecolor='white', markeredgecolor=colour, markersize=mss)
-            
+
       id_branch = 'ele_mva_value_old'
       id_fpr,id_tpr,id_score = roc_curve(test.is_e[has_high],test[id_branch][has_high])
       id_auc = roc_auc_score(test.is_e[has_high],test[id_branch][has_high]) if len(set(test.is_e[has_high])) > 1 else 0.
@@ -253,7 +253,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                id_tpr*eff,
                linestyle='solid',color='orange',linewidth=1.0,
                )
-   
+
       colour = 'orange'
       for threshold in [-4.,0.,4.,6.,8.,9.,10.,11.,12.] :
          idx = np.abs(id_score-float(threshold/2.)).argmin()
@@ -264,7 +264,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
             plt.text(x, y+offset, f"{threshold/2.:.1f}", fontsize=fs, ha='center', va='center', clip_on=True, color=colour )
          else :
             plt.plot([x], [y], marker='o', markerfacecolor='white', markeredgecolor=colour, markersize=mss)
-   
+
       id_branch = 'gsf_bdtout1'
       id_fpr,id_tpr,id_score = roc_curve(test.is_e[has_high],test[id_branch][has_high])
       id_auc = roc_auc_score(test.is_e[has_high],test[id_branch][has_high]) if len(set(test.is_e[has_high])) > 1 else 0.
@@ -272,7 +272,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                id_tpr*eff,
                linestyle='solid',color='red',linewidth=1.0,
                )
-   
+
       colour = 'red'
       for threshold in [0.,4.,8.,12.,13.,14.,15.,16.] :
          idx = np.abs(id_score-float(threshold/2.)).argmin()
@@ -286,7 +286,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
 
       ########################################
       # Electron (2.0 < pT < 5.0 GeV)
-   
+
       has_med = has_ele & (test.trk_pt>2.0) & (test.trk_pt<5.0)
       denom = has_obj&test.is_e; numer = has_med&denom;
       eff = float(numer.sum()) / float(denom.sum()) if float(denom.sum()) > 0. else 0.
@@ -298,7 +298,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                label='2.0 < pT(trk) < 5.0 GeV',
                )
       print("2.0<pT<5.0:",eff,fr)
-   
+
       id_branch = 'ele_mva_value_depth15'
       id_fpr,id_tpr,id_score = roc_curve(test.is_e[has_med],test[id_branch][has_med])
       id_auc = roc_auc_score(test.is_e[has_med],test[id_branch][has_med]) if len(set(test.is_e[has_med])) > 1 else 0.
@@ -306,7 +306,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                id_tpr*eff,
                linestyle='solid',color='purple',linewidth=1.0,
                )
-   
+
       colour = 'purple'
       for threshold in [-8.,-4.,0.,2.,4.,6.,8.,7.,8.,9.,10.,11.,12.,13.,14.] :
          idx = np.abs(id_score-float(threshold/2.)).argmin()
@@ -317,7 +317,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
             plt.text(x, y+offset, f"{threshold/2.:.1f}", fontsize=fs, ha='center', va='center', clip_on=True, color=colour )
          else :
             plt.plot([x], [y], marker='o', markerfacecolor='white', markeredgecolor=colour, markersize=mss)
-   
+
       id_branch = 'ele_mva_value'
       id_fpr,id_tpr,id_score = roc_curve(test.is_e[has_med],test[id_branch][has_med])
       id_auc = roc_auc_score(test.is_e[has_med],test[id_branch][has_med]) if len(set(test.is_e[has_med])) > 1 else 0.
@@ -325,7 +325,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                id_tpr*eff,
                linestyle='solid',color='blue',linewidth=1.0,
                )
-   
+
       colour = 'blue'
       for threshold in np.arange(2,13) :
          idx = np.abs(id_score-float(threshold/2.)).argmin()
@@ -336,7 +336,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
             plt.text(x, y+offset, f"{threshold/2.:.1f}", fontsize=fs, ha='center', va='center', clip_on=True, color=colour )
          else :
             plt.plot([x], [y], marker='o', markerfacecolor='white', markeredgecolor=colour, markersize=mss)
-   
+
       id_branch = 'ele_mva_value_old'
       id_fpr,id_tpr,id_score = roc_curve(test.is_e[has_med],test[id_branch][has_med])
       id_auc = roc_auc_score(test.is_e[has_med],test[id_branch][has_med]) if len(set(test.is_e[has_med])) > 1 else 0.
@@ -344,7 +344,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                id_tpr*eff,
                linestyle='solid',color='orange',linewidth=1.0,
                )
-   
+
       colour = 'orange'
       for threshold in np.arange(2,13) :
          idx = np.abs(id_score-float(threshold/2.)).argmin()
@@ -355,7 +355,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
             plt.text(x, y+offset, f"{threshold/2.:.1f}", fontsize=fs, ha='center', va='center', clip_on=True, color=colour )
          else :
             plt.plot([x], [y], marker='o', markerfacecolor='white', markeredgecolor=colour, markersize=mss)
-   
+
       id_branch = 'gsf_bdtout1'
       id_fpr,id_tpr,id_score = roc_curve(test.is_e[has_med],test[id_branch][has_med])
       id_auc = roc_auc_score(test.is_e[has_med],test[id_branch][has_med]) if len(set(test.is_e[has_med])) > 1 else 0.
@@ -363,7 +363,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                id_tpr*eff,
                linestyle='solid',color='red',linewidth=1.0,
                )
-   
+
       colour = 'red'
       for threshold in np.arange(2,17) :
          idx = np.abs(id_score-float(threshold/2.)).argmin()
@@ -377,7 +377,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
 
       ########################################
       # Electron (0.5 < pT < 2.0 GeV)
-   
+
       has_low = has_ele & (test.trk_pt<2.0)
       denom = has_obj&test.is_e; numer = has_low&denom;
       eff = float(numer.sum()) / float(denom.sum()) if float(denom.sum()) > 0. else 0.
@@ -389,7 +389,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                label='pT(trk) < 2.0 GeV',
                )
       print("pT<2.0:",eff,fr)
-   
+
       id_branch = 'ele_mva_value_depth15'
       id_fpr,id_tpr,id_score = roc_curve(test.is_e[has_low],test[id_branch][has_low])
       id_auc = roc_auc_score(test.is_e[has_low],test[id_branch][has_low]) if len(set(test.is_e[has_low])) > 1 else 0.
@@ -397,7 +397,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                id_tpr*eff,
                linestyle='solid',color='purple',linewidth=1.0,
                )
-   
+
       colour = 'purple'
       for threshold in np.arange(2,13) :
          idx = np.abs(id_score-float(threshold/2.)).argmin()
@@ -408,7 +408,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
             plt.text(x, y+offset, f"{threshold/2.:.1f}", fontsize=fs, ha='center', va='center', clip_on=True, color=colour )
          else :
             plt.plot([x], [y], marker='o', markerfacecolor='white', markeredgecolor=colour, markersize=mss)
-   
+
       id_branch = 'ele_mva_value'
       id_fpr,id_tpr,id_score = roc_curve(test.is_e[has_low],test[id_branch][has_low])
       id_auc = roc_auc_score(test.is_e[has_low],test[id_branch][has_low]) if len(set(test.is_e[has_low])) > 1 else 0.
@@ -416,7 +416,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                id_tpr*eff,
                linestyle='solid',color='blue',linewidth=1.0,
                )
-   
+
       colour = 'blue'
       for threshold in np.arange(2,13) :
          idx = np.abs(id_score-float(threshold/2.)).argmin()
@@ -427,7 +427,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
             plt.text(x, y+offset, f"{threshold/2.:.1f}", fontsize=fs, ha='center', va='center', clip_on=True, color=colour )
          else :
             plt.plot([x], [y], marker='o', markerfacecolor='white', markeredgecolor=colour, markersize=mss)
-   
+
       id_branch = 'ele_mva_value_old'
       id_fpr,id_tpr,id_score = roc_curve(test.is_e[has_low],test[id_branch][has_low])
       id_auc = roc_auc_score(test.is_e[has_low],test[id_branch][has_low]) if len(set(test.is_e[has_low])) > 1 else 0.
@@ -435,7 +435,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                id_tpr*eff,
                linestyle='solid',color='orange',linewidth=1.0,
                )
-   
+
       colour = 'orange'
       for threshold in np.arange(2,13) :
          idx = np.abs(id_score-float(threshold/2.)).argmin()
@@ -446,7 +446,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
             plt.text(x, y+offset, f"{threshold/2.:.1f}", fontsize=fs, ha='center', va='center', clip_on=True, color=colour )
          else :
             plt.plot([x], [y], marker='o', markerfacecolor='white', markeredgecolor=colour, markersize=mss)
-   
+
       id_branch = 'gsf_bdtout1'
       id_fpr,id_tpr,id_score = roc_curve(test.is_e[has_low],test[id_branch][has_low])
       id_auc = roc_auc_score(test.is_e[has_low],test[id_branch][has_low]) if len(set(test.is_e[has_low])) > 1 else 0.
@@ -454,7 +454,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                id_tpr*eff,
                linestyle='solid',color='red',linewidth=1.0,
                )
-   
+
       colour = 'red'
       for threshold in np.arange(2,13) :
          idx = np.abs(id_score-float(threshold/2.)).argmin()
@@ -465,21 +465,21 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
             plt.text(x, y+offset, f"{threshold/2.:.1f}", fontsize=fs, ha='center', va='center', clip_on=True, color=colour )
          else :
             plt.plot([x], [y], marker='o', markerfacecolor='white', markeredgecolor=colour, markersize=mss)
-   
+
       ########################################
       ########################################
 
       if TRK_DENOM :
-   
+
          has_trk = (egamma.has_trk) & (egamma.trk_pt>0.5) & (np.abs(egamma.trk_eta)<2.5)
          has_ele = (egamma.has_ele) & (egamma.trk_pt>0.5) & (np.abs(egamma.trk_eta)<2.5)
-   
+
          print(len(has_trk),has_trk.sum())
          print(has_trk)
 
          ########################################
          # PF Electron (pT > 5.0 GeV)
-   
+
          has_high = has_ele & (egamma.trk_pt>5.0)
          denom = has_trk&egamma.is_e; numer = has_high&denom
          eff = float(numer.sum()) / float(denom.sum()) if float(denom.sum()) > 0. else 0.
@@ -490,7 +490,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                   markersize=8,linestyle='none',
                   label='pT(trk) > 5.0 GeV',
                   )
-   
+
          id_branch = 'ele_mva_value_retrained'
          id_fpr,id_tpr,id_score = roc_curve(egamma.is_e[has_high],egamma[id_branch][has_high])
          id_auc = roc_auc_score(egamma.is_e[has_high],egamma[id_branch][has_high]) if len(set(egamma.is_e[has_high])) > 1 else 0.
@@ -498,7 +498,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                   id_tpr*eff,
                   linestyle='solid',color='green',linewidth=1.0,
                   )
-   
+
          colour = 'green'
          for threshold in np.arange(-1,8) :
             idx = np.abs(id_score-float(threshold/2.)).argmin()
@@ -509,7 +509,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                plt.text(x, y+offset, f"{threshold/2.:.1f}", fontsize=fs, ha='center', va='center', clip_on=True, color=colour )
             else :
                plt.plot([x], [y], marker='o', markerfacecolor='white', markeredgecolor=colour, markersize=mss)
-   
+
          for threshold in [0.,1.,2.,3.] :
             idx = np.abs(id_score-float(threshold)).argmin()
             wp = egamma[id_branch]>id_score[idx]
@@ -519,7 +519,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
 
          ########################################
          # PF Electron (2.o < pT < 5.0 GeV)
-   
+
          has_med = has_ele & (egamma.trk_pt>2.0) & (egamma.trk_pt<5.0)
          denom = has_trk&egamma.is_e; numer = has_med&denom
          eff = float(numer.sum()) / float(denom.sum()) if float(denom.sum()) > 0. else 0.
@@ -530,7 +530,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                   markersize=8,linestyle='none',
                   label='2 < pT(trk) < 5.0 GeV',
                   )
-   
+
          id_branch = 'ele_mva_value_retrained'
          id_fpr,id_tpr,id_score = roc_curve(egamma.is_e[has_med],egamma[id_branch][has_med])
          id_auc = roc_auc_score(egamma.is_e[has_med],egamma[id_branch][has_med]) if len(set(egamma.is_e[has_med])) > 1 else 0.
@@ -538,7 +538,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                   id_tpr*eff,
                   linestyle='solid',color='green',linewidth=1.0,
                   )
-   
+
          colour = 'green'
          for threshold in np.arange(-1,8) :
             idx = np.abs(id_score-float(threshold/2.)).argmin()
@@ -549,7 +549,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                plt.text(x, y+offset, f"{threshold/2.:.1f}", fontsize=fs, ha='center', va='center', clip_on=True, color=colour )
             else :
                plt.plot([x], [y], marker='o', markerfacecolor='white', markeredgecolor=colour, markersize=mss)
-   
+
          for threshold in [0.,1.,2.,3.] :
             idx = np.abs(id_score-float(threshold)).argmin()
             wp = egamma[id_branch]>id_score[idx]
@@ -559,7 +559,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
 
          ########################################
          # PF Electron (pT < 5.0 GeV)
-   
+
          has_low = has_ele & (egamma.trk_pt<2.0)
          denom = has_trk&egamma.is_e; numer = has_low&denom
          eff = float(numer.sum()) / float(denom.sum()) if float(denom.sum()) > 0. else 0.
@@ -570,7 +570,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                   markersize=8,linestyle='none',
                   label='pT(trk) < 2.0 GeV',
                   )
-   
+
          id_branch = 'ele_mva_value_retrained'
          id_fpr,id_tpr,id_score = roc_curve(egamma.is_e[has_low],egamma[id_branch][has_low])
          id_auc = roc_auc_score(egamma.is_e[has_low],egamma[id_branch][has_low]) if len(set(egamma.is_e[has_low])) > 1 else 0.
@@ -578,7 +578,7 @@ def bparking_dev5(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
                   id_tpr*eff,
                   linestyle='solid',color='green',linewidth=1.0,
                   )
-   
+
    ##########
    # Finish up ... 
    plt.legend(loc='lower right',facecolor='white',framealpha=None,frameon=False) # 'center right'
