@@ -12,15 +12,15 @@ from __future__ import print_function
 import builtins
 import future
 from future.utils import raise_with_traceback
-import past
-import six
+#import past
+#import six
 
 from argparse import ArgumentParser
 import json
 import numpy as np
 import os
 import pandas as pd
-from sklearn.externals import joblib
+import joblib
 import socket
 #from tabulate import tabulate
 import xgboost as xgb
@@ -41,10 +41,11 @@ from matplotlib.font_manager import FontProperties
 print("##### Command line args #####")
 
 parser = ArgumentParser()
-parser.add_argument('--verbose',action='store_true')
-parser.add_argument('--debug',action='store_true')
+parser.add_argument('--verbose',default=False,action='store_true')
+parser.add_argument('--debug',default=False,action='store_true')
 parser.add_argument('--nevents',default=-1,type=int)
-parser.add_argument('--train',action='store_true')
+parser.add_argument('--train',default=False,action='store_true')
+parser.add_argument('--readmodel',default=False,action='store_true')
 parser.add_argument('--config',default='hyperparameters.json',type=str)
 parser.add_argument('--nthreads', default=8, type=int)
 args = parser.parse_args()
@@ -86,16 +87,27 @@ files = [
    #input_data+'/temp_'+['miniaod.root','miniaod_test.root'][1]
    #input_data+'/output_numEvent1000.root'
    #input_data+'/test_nonres_med/output_0.root',
-   input_data+'/output_0.root',
+   #input_data+'/output_0.root',
    #input_data+'/output_1.root',
    #input_data+'/output_2.root',
    #input_data+'/output_3.root',
    #input_data+'/test_res_small/output_1.root',
    #input_data+'/test_res_med/output_1.root',
    #input_data+'/test_nonres_med/output_1.root'
-   ]
-new_ntuples = any([ "LATEST" in x for x in files ])
-
+   #
+   #input_data+'/temp_'+['miniaod.root','miniaod_test.root'][1] # works, but limited stats !!
+   #input_data+'/2020May20/output_miniaod_test.root' # works, low stats, but only seeding, no depth15 or retraining IDs
+   #input_data+'/2020May20/output_aod.root' # works, high stats, but only seeding, no depth15 or retraining IDs
+   #
+   # nonres_med
+   #"../data/170823/nonres_med/output_1.root",
+   #"../data/170823/nonres_med/output_2.root",
+   # nonres_large
+   "../data/170823/nonres_large/output_0.root",
+   #"../data/170823/nonres_large/output_000.root",
+]
+#new_ntuples = any([ "LATEST" in x for x in files ])
+    
 features = [ # ORDER IS VERY IMPORTANT ! 
    'eid_rho',
    'eid_ele_pt',
@@ -127,8 +139,8 @@ additional = [
    'trk_pt','trk_eta','trk_charge','trk_dr',
    'gsf_pt','gsf_eta','gsf_dr','gsf_bdtout2','gsf_mode_pt',
    'ele_pt','ele_eta','ele_dr',
-   'ele_mva_value','ele_mva_value_old','ele_mva_value_retrained',
-   'ele_mva_value_depth10','ele_mva_value_depth11','ele_mva_value_depth13','ele_mva_value_depth15',
+   'ele_mva_value','ele_mva_value_retrained',#'ele_mva_value_old',
+   'ele_mva_value_depth10','ele_mva_value_depth11','ele_mva_value_depth13',#'ele_mva_value_depth15',
    'evt','weight','rho',
    'tag_pt','tag_eta',
    'gsf_dxy','gsf_dz','gsf_nhits','gsf_chi2red',
@@ -145,7 +157,7 @@ columns = features + additional + labelling
 columns = list(set(columns))
 
 ################################################################################
-print("##### Load files #####")
+print("##### Load files #####",files)
 
 def get_data(files,columns,features) :
 
@@ -153,19 +165,20 @@ def get_data(files,columns,features) :
    pfgsf = ['pfgsf_pt','pfgsf_eta','has_pfgsf','pfgsf_mode_pt']
    has_pfgsf_branches = None
    try : 
-      uproot.open(files[0]).get('ntuplizer/tree').pandas.df(branches=pfgsf)
+      #uproot.open(files[0]).get('ntuplizer/tree').pandas.df(branches=pfgsf)
+      uproot.open(files[0])['ntuplizer/tree'].arrays(pfgsf,library="pd")
       columns += pfgsf
       has_pfgsf_branches = True
    except KeyError : 
       has_pfgsf_branches = False
       print("Cannot find following branches:",pfgsf)
-   except :
-      print("Unknown error in get_data()")
+   except Exception as error:
+      print("Unknown error in get_data()",error)
       quit()
    #@@ END
 
    print('Getting files:\n', '\n'.join(files))
-   dfs = [ uproot.open(i).get('ntuplizer/tree').pandas.df(branches=columns)  for i in files ]
+   dfs = [ uproot.open(i)['ntuplizer/tree'].arrays(columns,library="pd")  for i in files ]
    print('Extracted branches: ',columns)
    df = pd.concat(dfs)
 
@@ -208,6 +221,7 @@ print("Tag-side muon req, pT threshold:   ",tag_muon_pt)
 print("Tag-side muon req, eta threshold:  ",tag_muon_eta)
 print("Pre  tag-side muon req, data.shape:",data.shape)
 data = data[(data.tag_pt>tag_muon_pt)&(np.abs(data.tag_eta)<tag_muon_eta)]
+data = data[(np.abs(data.tag_eta)<tag_muon_eta)]
 print("Post tag-side muon req, data.shape:",data.shape)
 
 ################################################################################
@@ -217,6 +231,7 @@ if args.train :
    print("##### Load binning and save weights #####")
 
    # print("Preprocessing some columns ...")
+   data = data[data['trk_eta'].notna()] # filter trk_eta NaN
    log_trkpt = np.log10(data.trk_pt)
    log_trkpt[np.isnan(log_trkpt)] = -9999
    data['log_trkpt'] = log_trkpt
@@ -265,7 +280,10 @@ if args.verbose :
    print(lowpt.info())
    #pretty=lambda df:tabulate(df,headers='keys',tablefmt='psql') # 'html'
    #print(pretty(lowpt.describe().T)))
-
+   #
+   #print(lowpt[lowpt.gsf_bdtout2<-9.999].describe().T)
+   #print(lowpt[lowpt.gsf_bdtout2<-9.999].info())
+   
 ################################################################################
 print("##### Define train/validation/test data sets #####")
 
@@ -299,21 +317,26 @@ if args.train :
 #      test = test[mask]
 
 def debug(df,str=None,is_egamma=False) :
-   if str is not None : print(str)
-   elif is_egamma : print("EGAMMA")
-   else : print("LOW PT")
-   has_trk = (df.has_trk) & (df.trk_pt>0.5) & (np.abs(df.trk_eta)<2.4)
-   if is_egamma and new_ntuples is True : 
-      has_gsf = (df.has_pfgsf) & (df.pfgsf_pt>0.5) & (np.abs(df.pfgsf_eta)<2.4)
-   else :
-      has_gsf = (df.has_gsf) & (df.gsf_pt>0.5) & (np.abs(df.gsf_eta)<2.4)
-   has_ele = (df.has_ele) & (df.ele_pt>0.5) & (np.abs(df.ele_eta)<2.4)
-   print(pd.crosstab(df.is_e,
-                     [has_trk,has_gsf,has_ele],
-                     rownames=['is_e'],
-                     colnames=['has_trk','has_pfgsf' if is_egamma and new_ntuples else 'has_gsf','has_ele'],
-                     margins=True))
-   print
+    pt_cut = 0.5
+    if str is not None :
+        print(str)
+    elif is_egamma :
+        print("EGAMMA")
+    else :
+        print("LOW PT")
+    has_trk = (df.has_trk) & (df.trk_pt>pt_cut) & (np.abs(df.trk_eta)<2.4)
+    if is_egamma and has_pfgsf_branches is True :
+        has_gsf = (df.has_pfgsf) & (df.pfgsf_pt>pt_cut) & (np.abs(df.pfgsf_eta)<2.4)
+    else :
+        has_gsf = (df.has_gsf) & (df.gsf_pt>pt_cut) & (np.abs(df.gsf_eta)<2.4)
+    has_ele = (df.has_ele) & (df.ele_pt>pt_cut) & (np.abs(df.ele_eta)<2.4)
+    print(pd.crosstab(
+          df.is_e,
+          [has_trk,has_gsf,has_ele],
+          rownames=['is_e'],
+          colnames=['has_trk','has_pfgsf' if is_egamma and has_pfgsf_branches else 'has_gsf','has_ele'],
+          margins=True))
+    print()
 
 if args.verbose :
    debug(data,'original')
@@ -323,7 +346,7 @@ if args.verbose :
    debug(egamma,'egamma',is_egamma=True)
 
 ################################################################################
-print("##### Training #####")
+# Training
 
 model = None
 results = None
@@ -373,7 +396,7 @@ if args.train :
    print("Write model to: ",model_file)
    print('### Training complete ...')
 
-else : ## --train not specified
+elif args.readmodel : ## --train not specified
 
    print("##### Read trained model #####")
    model_file = '{:s}/model.pkl'.format(input_base)
@@ -384,13 +407,16 @@ else : ## --train not specified
    print("Write model to: ",model_file)
    print('### Loaded pre-existing model ...')
 
+else:
+    print('### Do not train nor load pre-existing model ...')
+   
 ################################################################################
 print("##### Added predictions to test set #####")
 
 #training_out = model.predict_proba(test[features].as_matrix())[:,1]
 #test['training_out'] = training_out
 
-if args.debug :
+if (args.train or args.readmodel) and args.debug :
    training_out = model.predict_proba(test[features].as_matrix())[:,1]
    test['training_out'] = training_out
    training_out = model.predict_proba(train[features].as_matrix())[:,1]
@@ -451,8 +477,8 @@ AxE = True
 
 # BParking performance plot for CMS week (Otto's talk)
 
-#from plotting.cmsweek import cmsweek
-#cmsweek("../output/plots_train2/cmsweek",test,egamma,has_pfgsf_branches=has_pfgsf_branches,AxE=AxE)
+from plotting.cmsweek import cmsweek
+cmsweek("../output/plots_train2/cmsweek",test,egamma,has_pfgsf_branches=has_pfgsf_branches,AxE=AxE)
 
 # Miscellaneous
 
@@ -468,5 +494,6 @@ AxE = True
 #from plotting.bparking_dev4 import bparking_dev4
 #bparking_dev4("../output/plots_train2/bparking_dev4",test,egamma,has_pfgsf_branches=has_pfgsf_branches,AxE=AxE)
 
-from plotting.bparking_dev5 import bparking_dev5
-bparking_dev5("../output/plots_train2/bparking_dev5",test,egamma,has_pfgsf_branches=has_pfgsf_branches,AxE=AxE)
+# THIS WAS THE LATEST ONE
+#from plotting.bparking_dev5 import bparking_dev5
+#bparking_dev5("../output/plots_train2/bparking_dev5",test,egamma,has_pfgsf_branches=has_pfgsf_branches,AxE=AxE)
