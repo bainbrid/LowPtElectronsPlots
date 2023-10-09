@@ -26,7 +26,7 @@ from setTDRStyle import setTDRStyle
 
 # Input files
 filenames = [
-    "/eos/user/b/bainbrid/lowpteleid/nonres_large/output_000.root",
+    #"/eos/user/b/bainbrid/lowpteleid/nonres_large/output_000.root",
     "../data/170823/nonres_large/output_000.root", # Rob's local version
     ]
     
