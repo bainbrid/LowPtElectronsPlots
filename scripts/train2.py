@@ -102,9 +102,21 @@ files = [
    # nonres_med
    #"../data/170823/nonres_med/output_1.root",
    #"../data/170823/nonres_med/output_2.root",
-   # nonres_large
-   "../data/170823/nonres_large/output_0.root",
-   #"../data/170823/nonres_large/output_000.root",
+   #
+
+   # THESE FILES vvvvv !!!!!!!!!!!!!!
+   # nonres_large, taken from: /eos/user/b/bainbrid/lowpteleid/nonres_large/
+   #"../data/170823/nonres_large/output_small.root",
+   #"../data/170823/nonres_large/output_medium.root",
+   "../data/170823/nonres_large/output_large.root",
+   #"../data/170823/data/output_data_small.root",
+   #"../data/170823/data/output_data_medium.root",
+   #"../data/170823/data/output_data_large.root",
+   # THESE FILES ^^^^^ !!!!!!!!!!!!!!
+
+   #"./output_numEvent1000.root",
+   #"./output_data_numEvent1000.root",
+
 ]
 #new_ntuples = any([ "LATEST" in x for x in files ])
     
@@ -147,9 +159,10 @@ additional = [
 ]
 
 labelling = [
-   'is_e','is_egamma',
-   'has_trk','has_seed','has_gsf','has_ele',
-   'seed_trk_driven','seed_ecal_driven'
+    'is_mc',
+    'is_e','is_egamma',
+    'has_trk','has_seed','has_gsf','has_ele',
+    'seed_trk_driven','seed_ecal_driven'
 ]
 
 columns = features + additional + labelling
@@ -196,8 +209,12 @@ def get_data(files,columns,features) :
    return df,has_pfgsf_branches
 
 data,has_pfgsf_branches = get_data(files,columns,features)
+
+# Data types 
+data = data.astype({'is_mc':'bool'}) # VERY IMPORTANT AS uint32 by default!
+
 print(data.columns)
-print(data.dtypes)
+for key,val in dict(data.dtypes).items(): print(f"col={key:32s} dtype={val}")
 
 ################################################################################
 print("##### Preprocessing the data #####")
@@ -214,14 +231,24 @@ if False :
 print("gsf_pt:      "," ".join(["{:6.3f}".format(x) for x in data.gsf_pt if x > -10.][:10]))
 print("gsf_mode_pt: "," ".join(["{:6.3f}".format(x) for x in data.gsf_mode_pt if x > -10.][:10]))
 
+# Truth table when using BOTH data and MC
+# in_acc,is_mc,xor,label
+#      0     0   0    1 (data, keep)
+#      1     0   1    1 (data, keep)
+#      0     1   1    0 (MC, drop ... or keep if ONLY MC sample)
+#      1     1   0    1 (MC, keep)
+
 # Filter based on tag muon pT and eta
-tag_muon_pt = 7.
+tag_muon_pt = 7.0
 tag_muon_eta = 1.5
 print("Tag-side muon req, pT threshold:   ",tag_muon_pt)
 print("Tag-side muon req, eta threshold:  ",tag_muon_eta)
 print("Pre  tag-side muon req, data.shape:",data.shape)
-data = data[(data.tag_pt>tag_muon_pt)&(np.abs(data.tag_eta)<tag_muon_eta)]
-data = data[(np.abs(data.tag_eta)<tag_muon_eta)]
+only_mc  = np.all(data.is_mc)
+is_mc    = data.is_mc
+in_acc   = (data.tag_pt>tag_muon_pt) & (np.abs(data.tag_eta)<tag_muon_eta)
+trg_reqs = in_acc if only_mc else ~(is_mc & ~in_acc) # implement truth table
+data = data[trg_reqs]
 print("Post tag-side muon req, data.shape:",data.shape)
 
 ################################################################################
@@ -306,14 +333,14 @@ print("test.shape",test.shape)
 
 if args.train : 
    df = train
-   mask = (df.trk_pt > 0.5) & (df.trk_pt < 15.) & (np.abs(df.trk_eta) < 2.4) & (df.gsf_pt > 0.) 
+   mask = (df.trk_pt > 0.5) & (df.trk_pt < 15.) & (np.abs(df.trk_eta) < 2.5) & (df.gsf_pt > 0.) 
    train = train[mask]
 #   if args.debug :
 #      df = validation
-#      mask = (df.trk_pt > 0.5) & (df.trk_pt < 15.) & (np.abs(df.trk_eta) < 2.4) & (df.gsf_pt > 0.) 
+#      mask = (df.trk_pt > 0.5) & (df.trk_pt < 15.) & (np.abs(df.trk_eta) < 2.5) & (df.gsf_pt > 0.) 
 #      validation = validation[mask]
 #      df = test
-#      mask = (df.trk_pt > 0.5) & (df.trk_pt < 15.) & (np.abs(df.trk_eta) < 2.4) & (df.gsf_pt > 0.) 
+#      mask = (df.trk_pt > 0.5) & (df.trk_pt < 15.) & (np.abs(df.trk_eta) < 2.5) & (df.gsf_pt > 0.) 
 #      test = test[mask]
 
 def debug(df,str=None,is_egamma=False) :
@@ -324,12 +351,12 @@ def debug(df,str=None,is_egamma=False) :
         print("EGAMMA")
     else :
         print("LOW PT")
-    has_trk = (df.has_trk) & (df.trk_pt>pt_cut) & (np.abs(df.trk_eta)<2.4)
+    has_trk = (df.has_trk) & (df.trk_pt>pt_cut) & (np.abs(df.trk_eta)<2.5)
     if is_egamma and has_pfgsf_branches is True :
-        has_gsf = (df.has_pfgsf) & (df.pfgsf_pt>pt_cut) & (np.abs(df.pfgsf_eta)<2.4)
+        has_gsf = (df.has_pfgsf) & (df.pfgsf_pt>pt_cut) & (np.abs(df.pfgsf_eta)<2.5)
     else :
-        has_gsf = (df.has_gsf) & (df.gsf_pt>pt_cut) & (np.abs(df.gsf_eta)<2.4)
-    has_ele = (df.has_ele) & (df.ele_pt>pt_cut) & (np.abs(df.ele_eta)<2.4)
+        has_gsf = (df.has_gsf) & (df.gsf_pt>pt_cut) & (np.abs(df.gsf_eta)<2.5)
+    has_ele = (df.has_ele) & (df.ele_pt>pt_cut) & (np.abs(df.ele_eta)<2.5)
     print(pd.crosstab(
           df.is_e,
           [has_trk,has_gsf,has_ele],
@@ -477,8 +504,12 @@ AxE = True
 
 # BParking performance plot for CMS week (Otto's talk)
 
-from plotting.cmsweek import cmsweek
-cmsweek("../output/plots_train2/cmsweek",test,egamma,has_pfgsf_branches=has_pfgsf_branches,AxE=AxE)
+#from plotting.cmsweek import cmsweek
+#cmsweek("../output/plots_train2/cmsweek",test,egamma,has_pfgsf_branches=has_pfgsf_branches,AxE=AxE)
+
+# Performance plots for scouting parking paper
+from plotting.parkingpaper import parkingpaper
+parkingpaper("../output/plots_train2/parkingpaper",test,egamma,has_pfgsf_branches=has_pfgsf_branches,AxE=AxE)
 
 # Miscellaneous
 
