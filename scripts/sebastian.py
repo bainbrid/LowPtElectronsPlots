@@ -14,9 +14,9 @@ from sklearn.metrics import roc_curve, roc_auc_score
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from matplotlib import rc
-rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
-rc('text', usetex=False)
+#from matplotlib import rc
+#rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+#rc('text', usetex=False)
 from matplotlib.legend_handler import HandlerLine2D
 from matplotlib.font_manager import FontProperties
 
@@ -28,7 +28,11 @@ from setTDRStyle import setTDRStyle
 
 # Input files
 #filenames = ["../data/170823/nonres_large/output_0.root"] # small
-filenames = ["../data/170823/nonres_large/output_000.root"] # large
+filenames = [
+    #"../data/170823/nonres_large/output_000.root", # large
+    #"output/output_old.root",
+    "output/output.root",
+    ]
 print('Input filenames:')
 for idx,filename in enumerate(filenames):
     print(f' #{idx}: {filename}')
@@ -37,7 +41,6 @@ columns = [
     # LABELING
     'is_e','is_egamma',
     'has_trk','has_seed','has_gsf','has_pfgsf','has_ele',
-    #'seed_trk_driven','seed_ecal_driven',
     # KINE
     'gen_pt','gen_eta',
     'tag_pt','tag_eta',
@@ -70,13 +73,14 @@ data = pd.concat(df)
 tag_muon_pt = 7.0
 tag_muon_eta = 1.5
 data = data[ (data.tag_pt>tag_muon_pt) & (np.abs(data.tag_eta)<tag_muon_eta) ]
+print(data.describe(include='all').T)
 
 # Split into low-pT and PF parts
 lowpt = data[np.invert(data.is_egamma)] # low pT electrons
 egamma = data[data.is_egamma]           # EGamma electrons
 
 pt_lower = 2.0
-pt_upper = 100.0 #None # or 5.0 ?
+pt_upper = 1.e6 #None # or 5.0 ?
 
 mask = (np.abs(lowpt.trk_eta) < 2.5) & (lowpt.trk_pt>pt_lower) & (lowpt.trk_pt<pt_upper)
 lowpt = lowpt[mask]
@@ -112,6 +116,13 @@ has_gen =  lowpt.is_e     & (lowpt.gen_pt>pt_lower) & (np.abs(lowpt.gen_eta)<2.5
 has_trk = (lowpt.has_trk) & (lowpt.trk_pt>pt_lower) & (np.abs(lowpt.trk_eta)<2.5)
 has_gsf = (lowpt.has_gsf) & (lowpt.gsf_pt>pt_lower) & (np.abs(lowpt.gsf_eta)<2.5)
 has_ele = (lowpt.has_ele) & (lowpt.ele_pt>pt_lower) & (np.abs(lowpt.ele_eta)<2.5)
+
+print(pd.crosstab(
+    lowpt.is_e,
+    [has_ele],
+    rownames=['is_e'],
+    colnames=['has_ele'],
+    margins=True))
 
 denom = has_gen; numer = has_trk&denom;
 trk_eff = float(numer.sum()) / float(denom.sum()) if float(denom.sum()) > 0. else 0.
@@ -177,11 +188,29 @@ plt.plot(
     linestyle='solid', color='red', linewidth=1.0,
     label='2020Sept15 ({:.3f})'.format(id_2020Sept15_auc))
 
+# 2020Sept15 TEST
+id_2020Sept15_test_branch = 'ele_mva_value_depth10'
+has_obj = has_trk
+id_2020Sept15_test_fpr,id_2020Sept15_test_tpr,id_2020Sept15_test_thr = roc_curve(lowpt.is_e[has_obj],lowpt[id_2020Sept15_test_branch][has_obj])
+id_2020Sept15_test_auc = roc_auc_score(lowpt.is_e[has_obj],lowpt[id_2020Sept15_test_branch][has_obj]) if len(set(lowpt.is_e[has_obj])) > 1 else 0.
+plt.plot(
+    id_2020Sept15_test_fpr,
+    id_2020Sept15_test_tpr,
+    linestyle='dashed', color='pink', linewidth=1.0,
+    label='2020Sept15 TEST ({:.3f})'.format(id_2020Sept15_test_auc))
+
 # PF electron
 has_pfgen   =  egamma.is_e       & (egamma.gen_pt>pt_lower)   & (np.abs(egamma.gen_eta)<2.5)
 has_pftrk   = (egamma.has_trk)   & (egamma.trk_pt>pt_lower)   & (np.abs(egamma.trk_eta)<2.5)
 has_pfgsf   = (egamma.has_pfgsf) & (egamma.pfgsf_pt>pt_lower) & (np.abs(egamma.pfgsf_eta)<2.5)
 has_pfele   = (egamma.has_ele)   & (egamma.ele_pt>pt_lower)   & (np.abs(egamma.ele_eta)<2.5)
+
+print(pd.crosstab(
+    egamma.is_e,
+    [has_pfele],
+    rownames=['is_e'],
+    colnames=['has_pfele'],
+    margins=True))
 
 denom = has_pfgen; numer = has_pftrk&denom
 pftrk_eff = float(numer.sum()) / float(denom.sum()) if float(denom.sum()) > 0. else 0.
@@ -274,7 +303,7 @@ plt.close()
 print('Created file: ./roc.pdf')
 
 ################################################################################
-# ROC curve using matplotlib
+# ROC curve using ROOT
 ################################################################################
 
 setTDRStyle()
