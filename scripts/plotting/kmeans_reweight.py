@@ -4,7 +4,9 @@ import os
 import matplotlib.pyplot as plt
 import json
 
-def calc_weights(
+# READ WEIGHTS ...
+#def calc_weights(
+def read_weights(
         data,
         reweight_features = ['log_trkpt', 'trk_eta'],
         nbins=600,
@@ -19,12 +21,13 @@ def calc_weights(
     models = f'{base}/models/{tag}'
     if not os.path.isfile(f'{models}/{dataset}_kmeans_weights.json') or not os.path.isfile(f'{models}/{dataset}_kmeans_weights.pkl') :
         print(f'Unable to find "{models}/{dataset}_kmeans_weights.json" and "{models}/{dataset}_kmeans_weights.pkl"')
-        return kmeans_reweight(
-            data,
-            reweight_features=reweight_features,
-            from_file=False,
-            tag=tag,
-            )
+        return data,None
+#        return kmeans_reweight(
+#            data,
+#            reweight_features=reweight_features,
+#            from_file=False,
+#            tag=tag,
+#            )
 
     if 'log_trkpt' in reweight_features: data['log_trkpt'] = np.log10(data.trk_pt)
     import joblib
@@ -37,8 +40,9 @@ def calc_weights(
         try : weights_lut[int(i)] = weights_json[i]
         except : success = False
     weights = apply_weight(bin,weights_lut)
-    label='is_e' # ["is_e","is_data"][0 if only_mc else 1] #@@ ?????????????
-    data['weight'] = weights * np.invert(data[label]) + data[label]
+    only_mc = np.all(data['is_mc'])
+    label = ["is_e","is_data"][0 if only_mc else 1] #@@ ?????????????
+    data['weight'] = weights# * np.invert(data[label]) + data[label]
     return data,model
     
 def train_test_split(data, div, thr):
@@ -46,6 +50,7 @@ def train_test_split(data, div, thr):
    mask = mask < thr
    return data[mask], data[np.invert(mask)]
 
+# DETERMINE WEIGHTS ...
 def kmeans_reweight(
         data,
         reweight_features = ['log_trkpt', 'trk_eta'],
@@ -53,7 +58,7 @@ def kmeans_reweight(
         dataset="test",
         base = "/Users/bainbrid/Repositories/LowPtElectronsPlots/scripts",
         tag="2023Dec15",
-        from_file=True,
+        from_file=False, # Was True
         ):
 
     #vectorize(excluded={2})
@@ -72,13 +77,14 @@ def kmeans_reweight(
     data["is_data"] = np.invert(data.is_mc)
     data = data.astype({'is_data':'bool'})
     only_mc = np.all(data['is_mc'])
-    label = ["is_e","is_data"][0 if only_mc else 1]
+    label = ["is_e","is_data"][0 if only_mc else 1] #@@ ?????????????
         
     if 'log_trkpt' in reweight_features: data['log_trkpt'] = np.log10(data.trk_pt)
     data['original_weight'] = 1. #np.invert(label)*original_weight.get_weight(data.log_trkpt, data.trk_eta)+label
 
     overall_scale = data.shape[0]/float(data[label].sum())
 
+    from_file=False # OVERRIDE
     if from_file:
 
         data,clusterizer = calc_weights(
@@ -279,13 +285,14 @@ def kmeans_reweight(
                 ('weighted', data.weight, "dashed"),
             ]:
                 tmp = {'is_e':'signal (MC), ','is_data':'bkgd (data), '}.get(label) # values = True
-                color = {'is_e':'green','is_data':'red'}.get(label)
+                color = {'is_e':'green','is_data':'green'}.get(label)
                 plt.hist(
                     data[data[label]][var], bins=100, density=True, linewidth=1.2, edgecolor=color, linestyle=ls,
                     histtype='step', label=tmp+name, range=x_range, weights=weight[data[label]]
                 )
-                tmp = {'is_e':'bkgd (MC), ','is_data':'signal (MC), '}.get(label) # values = False
-                color = {'is_e':'red','is_data':'green'}.get(label)
+                #tmp = {'is_e':'bkgd (MC), ','is_data':'signal (MC), '}.get(label) # values = False
+                tmp = {'is_e':'bkgd (MC), ','is_data':'bkgd (MC), '}.get(label) # values = False
+                color = {'is_e':'red','is_data':'red'}.get(label)
                 plt.hist(
                     data[np.invert(data[label])][var], bins=100, density=True, linewidth=1.2, edgecolor=color, linestyle=ls,
                     histtype='step', label=tmp+name, range=x_range, weights=weight[np.invert(data[label])]

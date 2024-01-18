@@ -91,6 +91,8 @@ def parkingpaper(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
    ##################################################
    # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
    # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
+   sebestian_simple_check = True
    
    root_file_only = True
    roc_in_root_style = True
@@ -100,23 +102,25 @@ def parkingpaper(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
    pt_upper = None
 
    eta_cut = 2.5
-   pf_binning = 0
+   pf_binning = False
    idx = 1
+       
+   nth = 10000 # Inspect every Nth entry !!!
 
    # Are we using only MC, or data and MC?
    only_mc = np.all(test.is_mc)
 
    # Reweight MC to data using kine vars
-   reweight = True if only_mc else False # Reweight MC to data only if using MC
-   tag = ['2023Nov14','2023Dec15','2023Dec28',][2]
+   reweight = False#True if only_mc else False # Reweight MC to data only if using MC
+   tag = ['2023Nov14','2023Dec15','2023Dec28','2024Jan01','2024Jan02'][4]
 
    determine_weights = False # Determine new weights for MC using data
    features = {
        '2023Dec15':['log_trkpt', 'trk_eta'],
        '2023Dec28':['log_trkpt', 'rho'],
+       '2024Jan01':['log_trkpt', 'trk_eta'],
+       '2024Jan02':['log_trkpt', 'rho'],
        }.get(tag)
-       
-   nth = 1000 # Inspect every Nth entry !!!
    
    # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -144,6 +148,7 @@ def parkingpaper(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
    print("  new weights:",determine_weights)
    print("  is_data:    ",~only_mc)
    print("  reweight:   ",reweight)
+   print("  simple roc: ",sebestian_simple_check)
    print("  version:    ",version)
    print("  pf_binning: ",pf_binning)
    print("  pt_lower:   ",pt_lower)
@@ -212,17 +217,48 @@ def parkingpaper(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
    #    0     1   1    ? (should ignore, but drop)
    #    1     1   0    1 (MC for signal, keep)
 
-   # if using both data and MC, filter based on mask to keep "MC for signal" and "data for bkgd" ONLY
+   # if using both data and MC, filter based on mask to keep ...
    if only_mc == False:
-       test = test[(test.is_e == test.is_mc)]
-       egamma = egamma[(egamma.is_e == egamma.is_mc)]
+       if determine_weights==False:
+           # ... "MC for signal" and "data for bkgd" ONLY if NOT determining weights
+           test = test[(test.is_e == test.is_mc)]
+           egamma = egamma[(egamma.is_e == egamma.is_mc)]
+           pass
+       else:
+           # ... "MC for bkgd" and "data for bkgd" ONLY if determining weights
+           test = test[(test.is_e == False)]
+           egamma = egamma[(egamma.is_e == False)]
 
    # Determine MC weights vs log(trk_pt) and trk_eta
-   from plotting.kmeans_reweight import kmeans_reweight, calc_weights
-   if reweight==True or determine_weights==True:
-       test,_ = calc_weights(test,tag=tag,reweight_features=features)
-       egamma,_ = calc_weights(egamma,tag=tag,reweight_features=features)
-       #kmeans_reweight(test,from_file=False) # determine weights and save to file
+   from plotting.kmeans_reweight import kmeans_reweight, read_weights
+#   if reweight==True or determine_weights==True:
+#       test,_ = calc_weights(test,tag=tag,reweight_features=features)
+#       egamma,_ = calc_weights(egamma,tag=tag,reweight_features=features)
+#       #kmeans_reweight(test,from_file=False) # determine weights and save to file
+   if determine_weights==True:
+       test,_ = kmeans_reweight(test,tag=tag,reweight_features=features)
+       egamma,_ = kmeans_reweight(egamma,tag=tag,reweight_features=features)
+       print("WEIGHTS DETERMINED, NOW QUITTING ...")
+       quit()
+   if reweight==True:
+       test,_ = read_weights(test,tag=tag,reweight_features=features)
+       egamma,_ = read_weights(egamma,tag=tag,reweight_features=features)
+
+   data = egamma
+   print("TABLE WEIGHTS FOR MC")
+   print(pd.crosstab(
+       data[data['is_mc']==True]['is_e'],
+       abs(data[data['is_mc']==True]['weight']-1.)<1.e-9,
+       rownames=['is_e'],
+       colnames=['weight==1'],
+       margins=True))
+   print("TABLE WEIGHTS FOR DATA")
+   print(pd.crosstab(
+       data[data['is_mc']==False]['is_e'],
+       abs(data[data['is_mc']==False]['weight']-1.)<1.e-9,
+       rownames=['is_e'],
+       colnames=['weight==1'],
+       margins=True))
 
    # Low-pT electrons
    has_gen =  test.is_e     & (test.gen_pt>pt_cut) & (np.abs(test.gen_eta)<2.5)
@@ -385,7 +421,6 @@ def parkingpaper(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
             label='PF electron')
 
    #@@ IMPORT PICKLE FILE WITH ROCS FROM SEBASTIAN SIMPLE SCRIPT !!!
-   sebestian_simple_check = False
    (id_pf_retrain_fpr,id_pf_retrain_tpr,id_pf_retrain_thr,id_pf_retrain_auc,id_pf_fpr,id_pf_tpr,id_pf_thr,id_pf_auc) = (None,None,None,None,None,None,None,None)
    if sebestian_simple_check:
        import pickle
@@ -802,12 +837,14 @@ def parkingpaper(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
    # Legend #
    ##########
 
-   temp = r.TGraph()
-   temp.SetMarkerColor(r.kWhite)
-   text = ["p_{T} > 0.5 GeV","p_{T} > 2 GeV","0.5 < p_{T} < 2 GeV"][idx] if not pf_binning else ["p_{T} > 2 GeV","p_{T} > 5 GeV","2 < p_{T} < 5 GeV","p_{T} > 10 GeV"][idx]
-   legend = r.TLegend(0.45,0.2,0.8,0.2+6*0.055)
+   legend = r.TLegend(0.45,0.2,0.8,0.2+7*0.055)
    legend.SetTextFont(42)
    legend.SetTextSize(0.04)
+   temp = r.TGraph()
+   temp.SetMarkerColor(r.kWhite)
+   text = "B^{+} #rightarrow K^{+}e^{+}e^{#minus}"
+   legend.AddEntry(temp,text,"p")
+   text = ["p_{T} > 0.5 GeV","p_{T} > 2 GeV","0.5 < p_{T} < 2 GeV"][idx] if not pf_binning else ["p_{T} > 2 GeV","p_{T} > 5 GeV","2 < p_{T} < 5 GeV","p_{T} > 10 GeV"][idx]
    legend.AddEntry(temp,text+f", |#eta| < {eta_cut}","p")
    legend.AddEntry(m_ele,"Low-p_{T} electron cand.","p")
    legend.AddEntry(g_id,"Low-p_{T} identification","l")
