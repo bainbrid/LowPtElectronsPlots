@@ -96,7 +96,8 @@ def parkingpaper(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
    
    root_file_only = True
    roc_in_root_style = True
-
+   plot_distributions = True
+   
    version = None
    pt_lower = None
    pt_upper = None
@@ -149,6 +150,7 @@ def parkingpaper(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
    print("  is_data:    ",~only_mc)
    print("  reweight:   ",reweight)
    print("  simple roc: ",sebestian_simple_check)
+   print("  plot distr: ",plot_distributions)
    print("  version:    ",version)
    print("  pf_binning: ",pf_binning)
    print("  pt_lower:   ",pt_lower)
@@ -840,8 +842,7 @@ def parkingpaper(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
    legend = r.TLegend(0.45,0.2,0.8,0.2+7*0.055)
    legend.SetTextFont(42)
    legend.SetTextSize(0.04)
-   temp = r.TGraph()
-   temp.SetMarkerColor(r.kWhite)
+   temp = r.TGraph(); temp.SetMarkerColor(r.kWhite)
    text = "B^{+} #rightarrow K^{+}e^{+}e^{#minus}"
    legend.AddEntry(temp,text,"p")
    text = ["p_{T} > 0.5 GeV","p_{T} > 2 GeV","0.5 < p_{T} < 2 GeV"][idx] if not pf_binning else ["p_{T} > 2 GeV","p_{T} > 5 GeV","2 < p_{T} < 5 GeV","p_{T} > 10 GeV"][idx]
@@ -877,7 +878,7 @@ def parkingpaper(dir,test,egamma,has_pfgsf_branches=True,AxE=True) :
    # END (PLOT FOR PARKING PAPER)
    ########################################
 
-   if True:
+   if plot_distributions:
        path = "../output/plots_train2/parkingpaper/"
        for signal,algo,title,label,binning,data in [
             (True,"PF", "gen_pt","PF GEN pT [GeV]",(100,0.,10.),egamma.gen_pt[has_pfgen]),
