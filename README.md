@@ -41,3 +41,10 @@ crab submit crab_cfg.py
 - parking_paper: an old/obsolete version of the EXO-23-007 branch
 - master_backup: old (unknown version of master, prior to merge of EXO-23-007)
 - reproduce_mauro_rocs: as it says on the tin.
+- obsolete: contains a bunch of old scripts, which may still be useful, found in:
+```
+obsolete/macros_0
+obsolete/macros_1
+obsolete/macros_2
+obsolete/scripts_0
+```
