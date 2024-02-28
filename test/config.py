@@ -5,6 +5,7 @@ from argparse import ArgumentParser
 parser = ArgumentParser()
 parser.add_argument('--verbosity',default=0,type=int)
 parser.add_argument('--nevents',default=-1,type=int)
+parser.add_argument('--sample',default="large",type=str)
 args = parser.parse_args()
 print("Command line args:",vars(args))
 
@@ -13,11 +14,11 @@ nevents = args.nevents
 
 ################################################################################
 
-files = [
-    "./data/output_small.root","./data/output_data_small.root",
-    #"./data/output_medium.root","./data/output_data_medium.root",
-    #"./data/output_large.root","./data/output_data_large.root",
-    ]
+files = {
+    "small":["./data/output_small.root","./data/output_data_small.root"],
+    "medium":["./data/output_medium.root","./data/output_data_medium.root"],
+    "large":["./data/output_large.root","./data/output_data_large.root"],
+    }.get(args.sample,["./data/output_small.root","./data/output_data_small.root"])
 
 ################################################################################
 
