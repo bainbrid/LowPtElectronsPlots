@@ -4,7 +4,7 @@ from parse import *
 from preprocess import *
 from plot_mpl import *
 from plot_root import *
-    
+
 ################################################################################
 
 if __name__ == "__main__":
@@ -21,7 +21,7 @@ if __name__ == "__main__":
     lowpt  = filter_data(lowpt, eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
     egamma = filter_data(egamma,eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
 
-    plot_roc_all_mpl(lowpt,egamma, eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
-    plot_roc_all_root(lowpt,egamma,eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
+    plot_mpl_all(lowpt,egamma, eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
+    plot_root_all(lowpt,egamma,eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
 
     
