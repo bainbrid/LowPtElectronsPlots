@@ -6,10 +6,10 @@ from config import *
 
 def get_data(files,nevents=-1) :
 
-    print('Getting files:\n', '\n'.join(files))
+    print('Getting files:\n', '\n'.join(files),'...')
     dfs = [ uproot.open(i)['ntuplizer/tree'].arrays(columns,library="pd")  for i in files ]
-    if verbosity > 1: print('Extracted branches: ',columns)
     df = pd.concat(dfs)
+    print('Done!')
 
     if verbosity > 0:
         print('Available branches: ',df.keys())

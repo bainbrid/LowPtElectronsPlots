@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 parser = ArgumentParser()
 parser.add_argument('--verbosity',default=0,type=int)
 parser.add_argument('--nevents',default=-1,type=int)
-parser.add_argument('--sample',default="large",type=str)
+parser.add_argument('--sample',default="small",type=str)
 args = parser.parse_args()
 print("Command line args:",vars(args))
 

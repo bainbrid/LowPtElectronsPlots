@@ -39,10 +39,10 @@ def draw_all_mpl(lowpt,egamma,eta_upper,pt_lower,**kwargs):
     has_ele = (lowpt.has_ele) & (lowpt.ele_pt>pt_lower) & (np.abs(lowpt.ele_eta)<eta_upper)
     
     # Eff and fake rate for tracks (not really needed)
-    denom = has_gen; numer = has_trk&denom;
-    trk_eff = float(numer.sum()) / float(denom.sum()) if float(denom.sum()) > 0. else 0.
-    denom = has_trk&(~lowpt.is_e); numer = has_trk&denom;
-    trk_fr = float(numer.sum()) / float(denom.sum()) if float(denom.sum()) > 0. else 0.
+    #denom = has_gen; numer = has_trk&denom;
+    #trk_eff = float(numer.sum()) / float(denom.sum()) if float(denom.sum()) > 0. else 0.
+    #denom = has_trk&(~lowpt.is_e); numer = has_trk&denom;
+    #trk_fr = float(numer.sum()) / float(denom.sum()) if float(denom.sum()) > 0. else 0.
     #draw_wp_mpl(trk_eff,trk_fr,label='Low-pT track',mfc='black')
     
     # Eff and fake rate for low-pT GSF tracks
@@ -108,10 +108,10 @@ def draw_all_mpl(lowpt,egamma,eta_upper,pt_lower,**kwargs):
     has_ele = (egamma.has_ele)   & (egamma.ele_pt>pt_lower)   & (np.abs(egamma.ele_eta)<eta_upper)
     
     # Eff and fake rate for tracks (not really needed)
-    denom = has_gen; numer = has_trk&denom;
-    trk_eff = float(numer.sum()) / float(denom.sum()) if float(denom.sum()) > 0. else 0.
-    denom = has_trk&(~egamma.is_e); numer = has_trk&denom;
-    trk_fr = float(numer.sum()) / float(denom.sum()) if float(denom.sum()) > 0. else 0.
+    #denom = has_gen; numer = has_trk&denom;
+    #trk_eff = float(numer.sum()) / float(denom.sum()) if float(denom.sum()) > 0. else 0.
+    #denom = has_trk&(~egamma.is_e); numer = has_trk&denom;
+    #trk_fr = float(numer.sum()) / float(denom.sum()) if float(denom.sum()) > 0. else 0.
     #draw_wp_mpl(trk_eff,trk_fr,label='PF track',mfc='black')
     
     # Eff and fake rate for EGamma seeds
@@ -140,7 +140,7 @@ def draw_all_mpl(lowpt,egamma,eta_upper,pt_lower,**kwargs):
     has_obj = has_ele
     fpr,tpr,thr = roc_curve(egamma.is_e[has_obj],egamma[branch][has_obj])
     auc = roc_auc_score(egamma.is_e[has_obj],egamma[branch][has_obj]) if len(set(egamma.is_e[has_obj])) > 1 else 0.
-    draw_roc_mpl(tpr,fpr,auc,ele_eff,ele_fr,label='ID, PF',color='purple')
+    draw_roc_mpl(tpr,fpr,auc,ele_eff,ele_fr,label='ID, PF retrained',color='purple')
 
 ################################################################################
 
@@ -170,7 +170,8 @@ def plot_roc_all_mpl(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
     # Finish up
     plt.legend(loc='lower right',facecolor='white',framealpha=None,frameon=False)
     plt.tight_layout()
-    print('Saving roc.pdf')
-    plt.savefig('roc.pdf')
+    name = 'roc_mpl.pdf'
+    print(f'Saving {name}')
+    plt.savefig(name)
     plt.clf()
     plt.close()
