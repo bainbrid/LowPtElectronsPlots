@@ -16,15 +16,19 @@ def draw_root_wp(eff,fr,**kwargs):
 ################################################################################
 
 def draw_root_roc(tpr,fpr,auc,eff=1.,fr=1.,**kwargs):
+    print("len(fpr)",len(fpr),end=" ")
     step = max(1,int(len(fpr)/1000.))
     fpr = fpr[::step]
     tpr = tpr[::step]
+    print("step",step,"len(fpr)",len(fpr))
     gr = r.TGraph(len(fpr), fpr*fr, tpr*eff)
     r.SetOwnership(gr,False)
     gr.SetLineStyle(kwargs.get('style',1))
     gr.SetLineWidth(kwargs.get('width',2))
     gr.SetLineColor(kwargs.get('color',r.kBlack))
-    gr.SetName(kwargs.get('label','unknown')+' '+'(AUC={:.3f})'.format(auc))
+    label = kwargs.get('label','unknown')
+    if auc is not None: label += ' ({:.3f})'.format(auc)
+    gr.SetName(label)
     gr.SetTitle('')
     gr.Draw("Lsame")
 

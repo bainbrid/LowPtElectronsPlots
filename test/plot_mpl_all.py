@@ -138,7 +138,11 @@ def plot_mpl_all(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
     ax.tick_params(axis='x', pad=10.)
 
     # By chance
-    plt.plot(np.arange(0.,1.,plt.xlim()[0]),np.arange(0.,1.,plt.xlim()[0]),ls='dotted',lw=0.5,label="By chance")
+    plt.plot(
+        np.arange(0.,1.,plt.xlim()[0]),
+        np.arange(0.,1.,plt.xlim()[0]),
+        ls='dotted',lw=0.5,
+        label="By chance (AUC=0.5)")
 
     # Draw working points and ROCs
     draw_mpl_all(lowpt,egamma,eta_upper,pt_lower)
@@ -146,7 +150,7 @@ def plot_mpl_all(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
     # Finish up
     plt.legend(loc='lower right',facecolor='white',framealpha=None,frameon=False)
     plt.tight_layout()
-    name = 'plots/roc_mpl.pdf'
+    name = 'plots/roc_mpl_all.pdf'
     print(f'Saving {name}')
     plt.savefig(name)
     plt.clf()

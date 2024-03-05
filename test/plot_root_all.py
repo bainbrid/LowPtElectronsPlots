@@ -68,14 +68,14 @@ def draw_root_all(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
     has_obj = has_ele
     fpr,tpr,thr = roc_curve(lowpt.is_e[has_obj],lowpt[branch][has_obj])
     auc = roc_auc_score(lowpt.is_e[has_obj],lowpt[branch][has_obj]) if len(set(lowpt.is_e[has_obj])) > 1 else 0.
-    draw_root_roc(tpr,fpr,auc,ele_eff,ele_fr,label='ID, 2021May17',color=r.kRed,style=3)
+    draw_root_roc(tpr,fpr,auc,ele_eff,ele_fr,label='ID, 2021May17',color=r.kRed,style=7)
 
     # ID ROC for 2020Nov28
     branch = 'ele_mva_value_depth11'
     has_obj = has_ele
     fpr,tpr,thr = roc_curve(lowpt.is_e[has_obj],lowpt[branch][has_obj])
     auc = roc_auc_score(lowpt.is_e[has_obj],lowpt[branch][has_obj]) if len(set(lowpt.is_e[has_obj])) > 1 else 0.
-    draw_root_roc(tpr,fpr,auc,ele_eff,ele_fr,label='ID, 2020Nov28',color=r.kRed,style=4)
+    draw_root_roc(tpr,fpr,auc,ele_eff,ele_fr,label='ID, 2020Nov28',color=r.kRed,style=9)
     
     # Labels for PF/EGamma
     has_gen =  egamma.is_e       & (egamma.gen_pt>pt_lower)   & (np.abs(egamma.gen_eta)<eta_upper)
@@ -145,14 +145,14 @@ def plot_root_all(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
     chance_tpr = np.array(np.arange(0.,1.,xmin)[1:]) # ignore first entry @ 0.
     chance_fpr = np.array(np.arange(0.,1.,xmin)[1:]) # ignore first entry @ 0.
     gr_chance = r.TGraph(len(chance_fpr), chance_fpr, chance_tpr)
-    gr_chance.SetLineStyle(2)
+    gr_chance.SetLineStyle(3)
     gr_chance.SetLineWidth(2)
     gr_chance.SetLineColor(r.kGray+1)
     gr_chance.Draw("AL")
     ngraphs = 1
     
     # Axes 
-    gr_chance.SetName("By chance")
+    gr_chance.SetName("By chance (AUC=0.5)")
     gr_chance.SetTitle("")
     c.SetLogx()
     gr_chance.GetXaxis().SetLimits(xmin,1.)
@@ -166,8 +166,8 @@ def plot_root_all(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
     
     # Legend
     graphs = c.GetListOfPrimitives()
-    xmax = 0.9
-    ymin = 0.15
+    xmax = 0.93
+    ymin = 0.18
     legend = r.TLegend(xmax-0.3,ymin,xmax,ymin+(len(graphs)+2)*0.04)
     legend.SetTextFont(42)
     legend.SetTextSize(0.03)
@@ -182,6 +182,6 @@ def plot_root_all(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
     
     # Labels and save
     cmsLabels(c,lumiText='2018 (13 TeV)',extraText='')
-    c.SaveAs(f"plots/roc_root.pdf")
+    c.SaveAs(f"plots/roc_root_all.pdf")
     cmsLabels(c,lumiText='2018 (13 TeV)',extraText='Preliminary')
-    c.SaveAs(f"plots/roc_root_prelim.pdf")
+    c.SaveAs(f"plots/roc_root_all_prelim.pdf")
