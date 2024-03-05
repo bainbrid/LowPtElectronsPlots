@@ -96,13 +96,6 @@ def draw_root_all(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
     denom = has_trk&(~egamma.is_e); numer = has_gsf&denom;
     gsf_fr = float(numer.sum()) / float(denom.sum()) if float(denom.sum()) > 0. else 0.
     draw_root_wp(gsf_eff,gsf_fr,label='Egamma',style=20,size=2,color=r.kOrange+1)
-    
-    # Eff and fake rate for PF electrons
-    denom = has_gen&has_trk; numer = has_ele&denom;
-    ele_eff = float(numer.sum()) / float(denom.sum()) if float(denom.sum()) > 0. else 0.
-    denom = has_trk&(~egamma.is_e); numer = has_ele&denom;
-    ele_fr = float(numer.sum()) / float(denom.sum()) if float(denom.sum()) > 0. else 0.
-    draw_root_wp(ele_eff,ele_fr,label='PF electron',style=20,size=1.6,color=r.kMagenta+2)
 
     # ID ROC for PF (default)
     branch = 'ele_mva_value'

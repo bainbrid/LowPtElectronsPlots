@@ -15,8 +15,6 @@ def draw_root_seed(
     add_auc=True,
     **kwargs,
     ):
-
-    print("pt_l",pt_l,"pt_u",pt_u)
     
     # Labels for low-pT
     has_gen =  LP.is_e     & (np.abs(LP.gen_eta)<eta_u) & (LP.gen_pt>pt_l) & (pt_u is None or LP.gen_pt<pt_u)
