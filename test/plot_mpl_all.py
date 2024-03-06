@@ -6,7 +6,7 @@ from plot_mpl_common import *
 
 ################################################################################
 
-def draw_mpl_all(lowpt,egamma,eta_upper,pt_lower,**kwargs):
+def draw_mpl_roc_all(lowpt,egamma,eta_upper,pt_lower,**kwargs):
 
     # Labels for low-pT
     has_gen =  lowpt.is_e     & (lowpt.gen_pt>pt_lower) & (np.abs(lowpt.gen_eta)<eta_upper)
@@ -120,7 +120,7 @@ def draw_mpl_all(lowpt,egamma,eta_upper,pt_lower,**kwargs):
 
 ################################################################################
 
-def plot_mpl_all(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
+def plot_mpl_roc_all(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
 
     # Figure 
     plt.figure(figsize=(6,6))
@@ -145,7 +145,7 @@ def plot_mpl_all(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
         label="By chance (AUC=0.5)")
 
     # Draw working points and ROCs
-    draw_mpl_all(lowpt,egamma,eta_upper,pt_lower)
+    draw_mpl_roc_all(lowpt,egamma,eta_upper,pt_lower)
 
     # Finish up
     plt.legend(loc='lower right',facecolor='white',framealpha=None,frameon=False)

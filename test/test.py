@@ -18,51 +18,51 @@ if __name__ == "__main__":
     pt_upper = None
 
     # Matplotlib version with all WPs and curves
-    from plot_mpl_all import *
-    plot_mpl_all(lowpt,egamma, eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
+    from plot_mpl_roc_all import *
+    plot_mpl_roc_all(lowpt,egamma, eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
 
     # ROOT version with all WPs and curves
-    from plot_root_all import *
-    plot_root_all(lowpt,egamma,eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
+    from plot_root_roc_all import *
+    plot_root_roc_all(lowpt,egamma,eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
 
     # ROOT version, comparison of seeds
-    from plot_root_seeds_comparison import *
-    plot_root_seeds_comparison(lowpt,egamma,eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
+    from plot_root_roc_seeds_comparison import *
+    plot_root_roc_seeds_comparison(lowpt,egamma,eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
 
     # ROOT version, low-pT seed ROCs
-    from plot_root_seed import *
-    plot_root_seed(lowpt,egamma,eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
+    from plot_root_roc_seed import *
+    plot_root_roc_seed(lowpt,egamma,eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
 
     # ROOT version, low-pT seed ROCs, pT-binned
     excl=True
     if excl==True: # Only one of these at a time! (Rerun for the other, as the pdf filename is the same)
         pt_lower_v = [2,1,0.5]
         pt_upper_v = [None,2,1]
-        from plot_root_seeds_pt_binned import *
-        plot_root_seeds_pt_binned(lowpt,egamma,eta_upper=eta_upper,pt_lower_v=pt_lower_v,pt_upper_v=pt_upper_v)
+        from plot_root_roc_seeds_pt_binned import *
+        plot_root_roc_seeds_pt_binned(lowpt,egamma,eta_upper=eta_upper,pt_lower_v=pt_lower_v,pt_upper_v=pt_upper_v)
     else:
         pt_lower_v = [2,1,0.5]
         pt_upper_v = [None,None,None]
-        from plot_root_seeds_pt_binned import *
-        plot_root_seeds_pt_binned(lowpt,egamma,eta_upper=eta_upper,pt_lower_v=pt_lower_v,pt_upper_v=pt_upper_v)
+        from plot_root_roc_seeds_pt_binned import *
+        plot_root_roc_seeds_pt_binned(lowpt,egamma,eta_upper=eta_upper,pt_lower_v=pt_lower_v,pt_upper_v=pt_upper_v)
 
     # ROOT version, comparison of IDs
-    from plot_root_ids_comparison import *
-    plot_root_ids_comparison(lowpt,egamma,eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
+    from plot_root_roc_ids_comparison import *
+    plot_root_roc_ids_comparison(lowpt,egamma,eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
 
     # ROOT version, PF IDs
-    from plot_root_id_pf import *
-    plot_root_id_pf(lowpt,egamma,eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
+    from plot_root_roc_id_pf import *
+    plot_root_roc_id_pf(lowpt,egamma,eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
 
     # ROOT version, low-pT IDs
-    from plot_root_id_lp import *
-    plot_root_id_lp(lowpt,egamma,eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
+    from plot_root_roc_id_lp import *
+    plot_root_roc_id_lp(lowpt,egamma,eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
 
     # ROOT version, low-pT ID ROCs, pT-binned
     pt_lower_v = [2,1,0.5]
     pt_upper_v = [None,2,1]
-    from plot_root_id_lp_pt_binned import *
-    plot_root_id_lp_pt_binned(lowpt,egamma,eta_upper=eta_upper,pt_lower_v=pt_lower_v,pt_upper_v=pt_upper_v)
+    from plot_root_roc_id_lp_pt_binned import *
+    plot_root_roc_id_lp_pt_binned(lowpt,egamma,eta_upper=eta_upper,pt_lower_v=pt_lower_v,pt_upper_v=pt_upper_v)
 
     
     

@@ -2,12 +2,12 @@ import numpy as np
 import ROOT as r
 from setTDRStyle import setTDRStyle
 from sklearn.metrics import roc_curve, roc_auc_score
-from plot_root_common import *
-from plot_root_seed import *
+from plot_root_roc_common import *
+from plot_root_roc_seed import *
     
 ################################################################################
 
-def plot_root_seeds_pt_binned(lowpt,egamma,eta_upper,pt_lower_v,pt_upper_v=None):
+def plot_root_roc_seeds_pt_binned(lowpt,egamma,eta_upper,pt_lower_v,pt_upper_v=None):
 
     # Cosmetics
     setTDRStyle()
