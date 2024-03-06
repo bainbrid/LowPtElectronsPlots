@@ -16,6 +16,7 @@ def draw_root_wp(eff,fr,**kwargs):
 ################################################################################
 
 def draw_root_roc(tpr,fpr,auc,eff=1.,fr=1.,**kwargs):
+    print("len(fpr)",len(fpr))
     step = max(1,int(len(fpr)/1000.))
     fpr = fpr[::step]
     tpr = tpr[::step]

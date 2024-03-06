@@ -101,7 +101,7 @@ def filter_data(
     
     mask = np.abs(data.trk_eta) < eta_upper
     if pt_lower is not None: mask &= (data.trk_pt > pt_lower)
-    if pt_upper is not None: mask &= (data.trk_pt > pt_upper)
+    if pt_upper is not None: mask &= (data.trk_pt < pt_upper)
     data = data[mask]
 
     return data
