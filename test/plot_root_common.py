@@ -60,17 +60,27 @@ def draw_root_score(data,**kwargs):
     his.GetXaxis().SetTitle(xtitle)
     his.GetYaxis().SetTitle(ytitle)
     his.GetYaxis().SetMaxDigits(3)
-    
-    # Ranges 
+    his.GetYaxis().SetNdivisions(505)
+
+    # Ranges
+    norm = kwargs.get('norm',True)
     logy = kwargs.get('logy',False)
-    ymin = kwargs.get('ymin',0.1 if logy else 0.)
+    ymin = 0.
+    ymin = 1.
+    if norm:
+        scale = 1./his.Integral()
+        his.Scale(scale)
+        ymin = 10**int(np.log10(scale))
+        ymin = kwargs.get('ymin',ymin if logy else 0.)
+    else:
+        ymin = kwargs.get('ymin',0.1 if logy else 0.)
     ymax = kwargs.get('ymax',his.GetMaximum()*2. if logy else his.GetMaximum()*1.2)
     his.SetMinimum(ymin)
     his.SetMaximum(ymax)
 
     # Drawing
     his.SetLineStyle(kwargs.get('style',1))
-    his.SetLineWidth(kwargs.get('width',1))
+    his.SetLineWidth(kwargs.get('width',2))
     his.SetLineColor(kwargs.get('color',r.kBlue))
 
     same = kwargs.get('same',False)

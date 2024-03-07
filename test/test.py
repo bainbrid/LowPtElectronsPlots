@@ -74,11 +74,19 @@ if __name__ == "__main__":
     plot_root_roc_id_lp_pt_binned(lowpt,egamma,eta_upper=eta_upper,pt_lower_v=pt_lower_v,pt_upper_v=pt_upper_v)
 
     ################################################################################
-    # BDT scores
+    # BDT scores and features
 
-    # ROOT version, low-pT IDs
+    # ROOT version, low-pT ID
     from plot_root_score_id_lp import *
     plot_root_score_id_lp(lowpt,egamma,eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
+
+    # ROOT version, PF ID
+    from plot_root_score_id_pf import *
+    plot_root_score_id_pf(lowpt,egamma,eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
+
+    # ROOT version, low-pT ID input features
+    from plot_root_vars_id_lp import *
+    plot_root_vars_id_lp(lowpt,egamma,eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
 
     
 
