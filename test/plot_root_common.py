@@ -1,4 +1,5 @@
 import ROOT as r
+import numpy as np
 
 ################################################################################
 
@@ -16,7 +17,7 @@ def draw_root_wp(eff,fr,**kwargs):
 ################################################################################
 
 def draw_root_roc(tpr,fpr,auc,eff=1.,fr=1.,**kwargs):
-    print("len(fpr)",len(fpr))
+    #print("len(fpr)",len(fpr))
     step = max(1,int(len(fpr)/1000.))
     fpr = fpr[::step]
     tpr = tpr[::step]
@@ -30,6 +31,50 @@ def draw_root_roc(tpr,fpr,auc,eff=1.,fr=1.,**kwargs):
     gr.SetName(label)
     gr.SetTitle('')
     gr.Draw("Lsame")
+
+################################################################################
+
+def draw_root_score(data,**kwargs):
+
+    # Create histo
+    title = kwargs.get('title','draw_root_score')
+    nbin = kwargs.get('nbin',100)
+    xmin = kwargs.get('xmin',np.min(data))
+    xmax = kwargs.get('xmax',np.max(data))
+    his = r.TH1F(title,'',nbin,xmin,xmax)
+    r.SetOwnership(his,False)
+
+    # Fill histo
+    for val in data:
+        val = min(max(val,xmin+1.e-9),xmax-1.e-9)
+        his.Fill(val)
+
+    # Axes
+    width = ( xmax - xmin ) / nbin
+    dp = max(0,int(np.log10(1./width)))
+    xtitle = kwargs.get('xtitle','Unknown')
+    xunit = kwargs.get('xunit',None)
+    ytitle = kwargs.get('ytitle',f'Entries / {width}')
+    if xunit is not None and xunit is not "": xtitle += f" [{xunit}]"
+    if xunit is not None and xunit is not "": ytitle += f" {xunit}"
+    his.GetXaxis().SetTitle(xtitle)
+    his.GetYaxis().SetTitle(ytitle)
+    his.GetYaxis().SetMaxDigits(3)
+    
+    # Ranges 
+    logy = kwargs.get('logy',False)
+    ymin = kwargs.get('ymin',0.1 if logy else 0.)
+    ymax = kwargs.get('ymax',his.GetMaximum()*2. if logy else his.GetMaximum()*1.2)
+    his.SetMinimum(ymin)
+    his.SetMaximum(ymax)
+
+    # Drawing
+    his.SetLineStyle(kwargs.get('style',1))
+    his.SetLineWidth(kwargs.get('width',1))
+    his.SetLineColor(kwargs.get('color',r.kBlue))
+
+    same = kwargs.get('same',False)
+    his.Draw("HIST same" if same else "HIST")
 
 ################################################################################
 
