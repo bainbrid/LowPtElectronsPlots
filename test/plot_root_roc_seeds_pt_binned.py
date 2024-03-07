@@ -2,7 +2,7 @@ import numpy as np
 import ROOT as r
 from setTDRStyle import setTDRStyle
 from sklearn.metrics import roc_curve, roc_auc_score
-from plot_root_roc_common import *
+from plot_root_common import *
 from plot_root_roc_seed import *
     
 ################################################################################
@@ -51,7 +51,7 @@ def plot_root_roc_seeds_pt_binned(lowpt,egamma,eta_upper,pt_lower_v,pt_upper_v=N
     # Draw working points and ROCs (via TGraphs)
     for idx,(pt_lower,pt_upper) in enumerate(zip(pt_lower_v,pt_upper_v)):
         label = f"pT > {pt_lower} GeV" if pt_upper is None else f"{pt_lower} < pT < {pt_upper} GeV"
-        draw_root_seed(
+        draw_root_roc_seed(
             lowpt,
             egamma,
             eta_upper,
@@ -88,6 +88,6 @@ def plot_root_roc_seeds_pt_binned(lowpt,egamma,eta_upper,pt_lower_v,pt_upper_v=N
     
     # Labels and save
     cmsLabels(c,lumiText='2018 (13 TeV)',extraText='')
-    c.SaveAs(f"plots/roc_root_seeds_pt_binned.pdf")
+    c.SaveAs(f"output/plot_root_roc_seeds_pt_binned.pdf")
     cmsLabels(c,lumiText='2018 (13 TeV)',extraText='Preliminary')
-    c.SaveAs(f"plots/roc_root_seeds_pt_binned_prelim.pdf")
+    c.SaveAs(f"output/plot_root_roc_seeds_pt_binned_prelim.pdf")

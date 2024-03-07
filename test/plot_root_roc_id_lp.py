@@ -1,8 +1,8 @@
-plot_root_id_lp.py import numpy as np
+import numpy as np
 import ROOT as r
 from setTDRStyle import setTDRStyle
 from sklearn.metrics import roc_curve, roc_auc_score
-from plot_root_roc_common import *
+from plot_root_common import *
 
 ################################################################################
 
@@ -16,7 +16,7 @@ def draw_root_roc_id_lp(
     **kwargs,
     ):
     
-    # Labels for PF/EGamma
+    # Labels for low-pT electrons
     has_gen =  LP.is_e     & (np.abs(LP.gen_eta)<eta_u) & (LP.gen_pt>pt_l) & (pt_u is None or LP.gen_pt<pt_u)
     has_trk = (LP.has_trk) & (np.abs(LP.trk_eta)<eta_u) & (LP.trk_pt>pt_l) & (pt_u is None or LP.trk_pt<pt_u)
     has_gsf = (LP.has_gsf) & (np.abs(LP.gsf_eta)<eta_u) & (LP.gsf_pt>pt_l) & (pt_u is None or LP.gsf_pt<pt_u)
@@ -33,7 +33,7 @@ def draw_root_roc_id_lp(
         color=kwargs.get('color',r.kRed),
         style=kwargs.get('style',1)
         )
-    
+
 ################################################################################
 
 def plot_root_roc_id_lp(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
@@ -78,7 +78,7 @@ def plot_root_roc_id_lp(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
     gr_chance.GetYaxis().SetTitle("Efficiency")
 
     # Draw working points and ROCs (via TGraphs)
-    draw_root_id_lp(lowpt,egamma,eta_upper,pt_lower)
+    draw_root_roc_id_lp(lowpt,egamma,eta_upper,pt_lower)
     
     # Legend
     graphs = c.GetListOfPrimitives()
@@ -98,6 +98,6 @@ def plot_root_roc_id_lp(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
     
     # Labels and save
     cmsLabels(c,lumiText='2018 (13 TeV)',extraText='')
-    c.SaveAs(f"plots/roc_root_id_lp.pdf")
+    c.SaveAs(f"output/plot_root_roc_id_lp.pdf")
     cmsLabels(c,lumiText='2018 (13 TeV)',extraText='Preliminary')
-    c.SaveAs(f"plots/roc_root_id_lp_prelim.pdf")
+    c.SaveAs(f"output/plot_root_roc_id_lp_prelim.pdf")

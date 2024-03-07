@@ -2,7 +2,7 @@ import numpy as np
 import ROOT as r
 from setTDRStyle import setTDRStyle
 from sklearn.metrics import roc_curve, roc_auc_score
-from plot_root_roc_common import *
+from plot_root_common import *
 
 ################################################################################
 
@@ -87,7 +87,7 @@ def plot_root_roc_id_pf(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
     gr_chance.GetYaxis().SetTitle("Efficiency")
 
     # Draw working points and ROCs (via TGraphs)
-    draw_root_id_pf(lowpt,egamma,eta_upper,pt_lower)
+    draw_root_roc_id_pf(lowpt,egamma,eta_upper,pt_lower)
     
     # Legend
     graphs = c.GetListOfPrimitives()
@@ -107,6 +107,6 @@ def plot_root_roc_id_pf(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
     
     # Labels and save
     cmsLabels(c,lumiText='2018 (13 TeV)',extraText='')
-    c.SaveAs(f"plots/roc_root_id_pf.pdf")
+    c.SaveAs(f"output/plot_root_roc_id_pf.pdf")
     cmsLabels(c,lumiText='2018 (13 TeV)',extraText='Preliminary')
-    c.SaveAs(f"plots/roc_root_id_pf_prelim.pdf")
+    c.SaveAs(f"output/plot_root_roc_id_pf_prelim.pdf")

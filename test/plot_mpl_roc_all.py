@@ -150,7 +150,7 @@ def plot_mpl_roc_all(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
     # Finish up
     plt.legend(loc='lower right',facecolor='white',framealpha=None,frameon=False)
     plt.tight_layout()
-    name = 'plots/roc_mpl_all.pdf'
+    name = 'output/plot_mpl_roc_all.pdf'
     print(f'Saving {name}')
     plt.savefig(name)
     plt.clf()
