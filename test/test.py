@@ -17,6 +17,9 @@ if __name__ == "__main__":
     pt_lower = 2.0
     pt_upper = None
 
+    ################################################################################
+    # ROCs, debug versions
+    
     # Matplotlib version with all WPs and curves
     from plot_mpl_roc_all import *
     plot_mpl_roc_all(lowpt,egamma, eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
@@ -24,6 +27,9 @@ if __name__ == "__main__":
     # ROOT version with all WPs and curves
     from plot_root_roc_all import *
     plot_root_roc_all(lowpt,egamma,eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
+
+    ################################################################################
+    # ROCs, seeds
 
     # ROOT version, comparison of seeds
     from plot_root_roc_seeds_comparison import *
@@ -46,6 +52,9 @@ if __name__ == "__main__":
         from plot_root_roc_seeds_pt_binned import *
         plot_root_roc_seeds_pt_binned(lowpt,egamma,eta_upper=eta_upper,pt_lower_v=pt_lower_v,pt_upper_v=pt_upper_v)
 
+    ################################################################################
+    # ROCs, IDs
+
     # ROOT version, comparison of IDs
     from plot_root_roc_ids_comparison import *
     plot_root_roc_ids_comparison(lowpt,egamma,eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
@@ -64,5 +73,15 @@ if __name__ == "__main__":
     from plot_root_roc_id_lp_pt_binned import *
     plot_root_roc_id_lp_pt_binned(lowpt,egamma,eta_upper=eta_upper,pt_lower_v=pt_lower_v,pt_upper_v=pt_upper_v)
 
+    ################################################################################
+    # BDT scores
+
+    # ROOT version, low-pT IDs
+    from plot_root_score_id_lp import *
+    plot_root_score_id_lp(lowpt,egamma,eta_upper=eta_upper,pt_lower=pt_lower,pt_upper=pt_upper)
+
+    
+
+    
     
     
