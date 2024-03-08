@@ -29,7 +29,7 @@ def draw_root_var_id_lp(
     
     draw_root_score(
         s,
-        title='Signal',
+        title='B^{+} #rightarrow K^{+}e^{+}e^{#minus}',
         nbin=kwargs.get('nbin',None),
         xmin=kwargs.get('xmin',None),
         xmax=kwargs.get('xmax',None),
@@ -44,7 +44,8 @@ def draw_root_var_id_lp(
 
     draw_root_score(
         b,
-        title='Background',
+        is_data=True,
+        title='Control data',
         nbin=kwargs.get('nbin',None),
         xmin=kwargs.get('xmin',None),
         xmax=kwargs.get('xmax',None),
@@ -87,22 +88,26 @@ def plot_root_var(lowpt,egamma,eta_upper,pt_lower,pt_upper=None,**kwargs):
     #c.RedrawAxis()
     
     # Legend
+    xmax = 0.92; ymax = 0.88
+    length = 0.2; height = 0.055; size = 0.045
     graphs = c.GetListOfPrimitives()
-    xmax = 0.9
-    ymax = 0.9
-    legend = r.TLegend(xmax-0.4,ymax-len(graphs)*0.05,xmax,ymax)
-    legend.SetNColumns(2)
+    legend = r.TLegend(xmax-1.2*length,ymax-len(graphs)*height,xmax,ymax)
+    #legend.SetNColumns(2)
     legend.SetTextFont(42)
-    legend.SetTextSize(0.04)
-
-    #temp = r.TGraph(); temp.SetMarkerColor(r.kWhite)
-    #text = f"pT > {pt_lower:.1f} GeV" if pt_upper is None else f"{pt_lower:.1f} < pT < {pt_upper:.1f} GeV"
-    #text = text.replace("pT","p_{T}")
-    #legend.AddEntry(temp,text,"p")
-    
+    legend.SetTextSize(size)
     for i,gr in enumerate(graphs):
-        legend.AddEntry(gr.GetName(),gr.GetName(),'l')
+        legend.AddEntry(gr.GetName(),gr.GetName(),'l' if 'data' not in gr.GetName() else 'pe')
     legend.Draw("same")
+
+    # Text
+    text = f"pT > {pt_lower:.1f} GeV" if pt_upper is None else f"{pt_lower:.1f} < pT < {pt_upper:.1f} GeV"
+    text = text.replace("pT","p_{T}")
+    txt = r.TLatex(0.45,0.83,text)
+    txt.SetNDC(True)
+    txt.SetTextAlign(11)
+    txt.SetTextFont(42)
+    txt.SetTextSize(size)
+    txt.Draw("same")
     
     # Labels and save
     cmsLabels(c,lumiText='2018 (13 TeV)',extraText='')
@@ -117,39 +122,37 @@ def plot_root_vars_id_lp(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
 
     features = [
         # BDT scores
-        {'feature':'ele_mva_value_depth10','xtitle':'ID BDT score','xunit':None,'nbin':80,'xmin':-20.,'xmax':20.,'ymin':0.,'ymax':0.1,},
+        {'feature':'ele_mva_value_depth10','xtitle':'Electron ID, BDT score','xunit':None,'nbin':80,'xmin':-20.,'xmax':20.,'ymin':0.,'ymax':0.1,},
         {'feature':'gsf_bdtout1','xtitle':'Unbiased seed BDT score','xunit':None,'nbin':80,'xmin':-20.,'xmax':20.,'ymin':0.,'ymax':0.2,},
         # Kinematic features
-        {'feature':'eid_ele_pt','xtitle':'Electron p_{T}','xunit':'GeV','nbin':100,'xmin':0.,'xmax':20.,'ymin':0.,'ymax':0.2,},
-        {'feature':'eid_trk_p','xtitle':'Electron track momentum','xunit':'GeV','nbin':100,'xmin':0.,'xmax':20.,'ymin':0.,'ymax':0.2,},
+        {'feature':'eid_ele_pt','xtitle':'Electron p_{T}','xunit':'GeV','nbin':100,'xmin':0.,'xmax':20.,'ymin':0.,'ymax':0.15,},
+        {'feature':'eid_trk_p','xtitle':'Electron track momentum','xunit':'GeV','nbin':100,'xmin':0.,'xmax':20.,'ymin':0.,'ymax':0.15,},
         {'feature':'eid_brem_frac','xtitle':'(p_{T}^{in} - p_{T}^{out}) / p_{T}^{in}','xunit':None,'nbin':100,'xmin':0.,'xmax':1.,'ymin':0.,'ymax':0.2,},
         # Track related 
-        {'feature':'eid_trk_chi2red','xtitle':'Track reduced #chi^{2}','xunit':None,'nbin':100,'xmin':0.,'xmax':10.,'ymin':0.,'ymax':0.2,},
-        {'feature':'eid_trk_nhits','xtitle':'Track number of hits','xunit':None,'nbin':31,'xmin':-0.5,'xmax':30.5,'ymin':0.,'ymax':0.2,},
-        {'feature':'eid_gsf_chi2red','xtitle':'GSF track reduced #chi^{2}','xunit':None,'nbin':100,'xmin':0.,'xmax':10.,'ymin':0.,'ymax':0.2,},
-        {'feature':'eid_gsf_nhits','xtitle':'GSF track number of hits','xunit':None,'nbin':31,'xmin':-0.5,'xmax':30.5,'ymin':0.,'ymax':0.2,},
+        {'feature':'eid_trk_chi2red','xtitle':'Track #chi^{2}/dof','xunit':None,'nbin':100,'xmin':0.,'xmax':10.,'ymin':0.,'ymax':0.15,},
+        {'feature':'eid_trk_nhits','xtitle':'Track number of hits','xunit':None,'nbin':31,'xmin':-0.5,'xmax':30.5,'ymin':0.,'ymax':0.15,},
+        {'feature':'eid_gsf_chi2red','xtitle':'GSF track #chi^{2}/dof','xunit':None,'nbin':100,'xmin':0.,'xmax':10.,'ymin':0.,'ymax':0.15,},
+        {'feature':'eid_gsf_nhits','xtitle':'GSF track number of hits','xunit':None,'nbin':31,'xmin':-0.5,'xmax':30.5,'ymin':0.,'ymax':0.25,},
         # SuperCluster related 
-        {'feature':'eid_sc_E','xtitle':'Super cluster energy','xunit':'GeV','nbin':100,'xmin':0.,'xmax':50.,'ymin':0.,'ymax':0.2,},
-        {'feature':'eid_sc_eta','xtitle':'Super cluster #eta','xunit':None,'nbin':104,'xmin':-2.6,'xmax':2.6,'ymin':0.,'ymax':0.1,},
-        {'feature':'eid_sc_etaWidth','xtitle':'Super cluster #Delta#eta','xunit':None,'nbin':100,'xmin':-1.,'xmax':1.,'ymin':0.,'ymax':0.2,},
-        {'feature':'eid_sc_phiWidth','xtitle':'Super cluster #Delta#phi','xunit':None,'nbin':100,'xmin':-1.,'xmax':1.,'ymin':0.,'ymax':0.2,},
+        {'feature':'eid_sc_E','xtitle':'Super cluster energy','xunit':'GeV','nbin':100,'xmin':0.,'xmax':20.,'ymin':0.,'ymax':0.1,},
+        {'feature':'eid_sc_eta','xtitle':'Super cluster #eta','xunit':None,'nbin':104,'xmin':-2.6,'xmax':2.6,'ymin':0.,'ymax':0.025,},
+        {'feature':'eid_sc_etaWidth','xtitle':'Super cluster #Delta#eta','xunit':None,'nbin':100,'xmin':-0,'xmax':0.5,'ymin':0.,'ymax':0.2,},
+        {'feature':'eid_sc_phiWidth','xtitle':'Super cluster #Delta#phi','xunit':None,'nbin':100,'xmin':0.,'xmax':0.5,'ymin':0.,'ymax':0.2,},
         # Shape variables
-        {'feature':'eid_shape_full5x5_sigmaIetaIeta','xtitle':'#sigma_{i#etai#eta}','xunit':None,'nbin':100,'xmin':0.,'xmax':10.,'ymin':0.,'ymax':0.2,},
-        {'feature':'eid_shape_full5x5_sigmaIetaIeta','xtitle':'#sigma_{i#etai#eta}','xunit':None,'nbin':100,'xmin':0.,'xmax':10.,'ymin':0.,'ymax':0.2,},
-        {'feature':'eid_shape_full5x5_sigmaIphiIphi','xtitle':'#sigma_{i#phii#phi}','xunit':None,'nbin':100,'xmin':0.,'xmax':10.,'ymin':0.,'ymax':0.2,},
+        {'feature':'eid_shape_full5x5_sigmaIetaIeta','xtitle':'#sigma_{i#etai#eta}','xunit':None,'nbin':100,'xmin':0.,'xmax':0.1,'ymin':0.,'ymax':0.2,},
+        {'feature':'eid_shape_full5x5_sigmaIphiIphi','xtitle':'#sigma_{i#phii#phi}','xunit':None,'nbin':100,'xmin':0.,'xmax':0.1,'ymin':0.,'ymax':0.2,},
         {'feature':'eid_shape_full5x5_circularity','xtitle':'Circularity','xunit':None,'nbin':100,'xmin':0.,'xmax':1.,'ymin':0.,'ymax':0.2,},
-        {'feature':'eid_shape_full5x5_r9','xtitle':'R_{9} (5#times5)','xunit':None,'nbin':100,'xmin':0.,'xmax':2.,'ymin':0.,'ymax':0.2,},
-        {'feature':'eid_shape_full5x5_HoverE','xtitle':'H/E (5#times5)','xunit':None,'nbin':100,'xmin':0.,'xmax':5.,'ymin':0.,'ymax':0.2,},
+        {'feature':'eid_shape_full5x5_r9','xtitle':'R_{9} (5#times5)','xunit':None,'nbin':100,'xmin':0.,'xmax':2.,'ymin':0.,'ymax':0.12,},
+        {'feature':'eid_shape_full5x5_HoverE','xtitle':'H/E (5#times5)','xunit':None,'nbin':100,'xmin':0.,'xmax':2.,'ymin':0.,'ymax':0.25,},
         # Track-cluster matching
         {'feature':'eid_match_SC_EoverP','xtitle':'Super cluster E/p','xunit':None,'nbin':100,'xmin':0.,'xmax':2.,'ymin':0.,'ymax':0.2,},
-        {'feature':'eid_match_SC_dEta','xtitle':'#Delta#eta(track, super cluster)','xunit':None,'nbin':100,'xmin':-1.,'xmax':1.,'ymin':0.,'ymax':0.2,},
-        {'feature':'eid_match_SC_dPhi','xtitle':'#Delta#phi(track, super cluster)','xunit':None,'nbin':100,'xmin':-1.,'xmax':1.,'ymin':0.,'ymax':0.2,},
-        {'feature':'eid_match_eclu_EoverP','xtitle':'Seed cluster E/p','xunit':None,'nbin':100,'xmin':0.,'xmax':2.,'ymin':0.,'ymax':0.2,},
-        {'feature':'eid_match_seed_dEta','xtitle':'#Delta#eta(track, seed cluster)','xunit':None,'nbin':100,'xmin':-1.,'xmax':1.,'ymin':0.,'ymax':0.2,},
+        {'feature':'eid_match_SC_dEta','xtitle':'#Delta#eta(track, super cluster)','xunit':None,'nbin':100,'xmin':-0.5,'xmax':0.5,'ymin':0.,'ymax':0.25,},
+        {'feature':'eid_match_SC_dPhi','xtitle':'#Delta#phi(track, super cluster)','xunit':None,'nbin':100,'xmin':-0.5,'xmax':0.5,'ymin':0.,'ymax':0.25,},
+        {'feature':'eid_match_eclu_EoverP','xtitle':'Seed cluster E/p','xunit':None,'nbin':100,'xmin':0.,'xmax':1.,'ymin':0.,'ymax':0.06,},
+        {'feature':'eid_match_seed_dEta','xtitle':'#Delta#eta(track, seed cluster)','xunit':None,'nbin':100,'xmin':-0.5,'xmax':0.5,'ymin':0.,'ymax':0.25,},
         # Misc
-        {'feature':'gsf_bdtout1','xtitle':'Unbiased seed BDT score','xunit':None,'nbin':80,'xmin':-20.,'xmax':20.,'ymin':0.,'ymax':0.2,},
-        {'feature':'eid_rho','xtitle':'#rho','xunit':None,'nbin':100,'xmin':0.,'xmax':50.,'ymin':0.,'ymax':0.2,},
-
+        {'feature':'gsf_bdtout1','xtitle':'Unbiased seed BDT score','xunit':None,'nbin':80,'xmin':-20.,'xmax':20.,'ymin':0.,'ymax':0.12,},
+        {'feature':'eid_rho','xtitle':'#rho','xunit':None,'nbin':100,'xmin':0.,'xmax':50.,'ymin':0.,'ymax':0.1,},
     ]
 
     for kwargs in features:

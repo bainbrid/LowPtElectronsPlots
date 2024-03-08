@@ -79,12 +79,24 @@ def draw_root_score(data,**kwargs):
     his.SetMaximum(ymax)
 
     # Drawing
-    his.SetLineStyle(kwargs.get('style',1))
-    his.SetLineWidth(kwargs.get('width',2))
-    his.SetLineColor(kwargs.get('color',r.kBlue))
-
+    data = kwargs.get('is_data',False)
+    if data == False:
+        his.SetLineStyle(kwargs.get('style',1))
+        his.SetLineWidth(kwargs.get('width',2))
+        his.SetLineColor(kwargs.get('color',r.kBlue))
+    else:
+        his.SetMarkerStyle(20)
+        his.SetMarkerSize(1)
+        his.SetMarkerColor(r.kBlack)
+        his.SetLineStyle(1)
+        his.SetLineWidth(2)
+        his.SetLineColor(r.kBlack)
+        
     same = kwargs.get('same',False)
-    his.Draw("HIST same" if same else "HIST")
+    if data == False:
+        his.Draw("HIST same" if same else "HIST")
+    else:
+        his.Draw("P E X0 same" if same else "P E X0")
 
 ################################################################################
 

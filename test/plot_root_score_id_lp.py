@@ -79,12 +79,13 @@ def plot_root_score_id_lp(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
     #c.RedrawAxis()
     
     # Legend
-    graphs = c.GetListOfPrimitives()
-    xmin = 0.15
-    ymin = 0.4
-    legend = r.TLegend(xmin,ymin,xmin+0.3,ymin+(len(graphs)+1)*0.07)
+    graphs = c.GetListOfPrimitives() 
+    xmax = 0.9
+    ymax = 0.9
+    legend = r.TLegend(xmax-0.4,ymax-len(graphs)*0.05,xmax,ymax)
+    legend.SetNColumns(2)
     legend.SetTextFont(42)
-    legend.SetTextSize(0.045)
+    legend.SetTextSize(0.04)
 
     temp = r.TGraph(); temp.SetMarkerColor(r.kWhite)
     text = f"pT > {pt_lower:.1f} GeV" if pt_upper is None else f"{pt_lower:.1f} < pT < {pt_upper:.1f} GeV"
