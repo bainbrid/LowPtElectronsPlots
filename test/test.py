@@ -10,8 +10,8 @@ if __name__ == "__main__":
     data = get_data(files,nevents)
     data = preprocess(data)
     lowpt,egamma = split_by_ele_type(data)
-    lowpt  = filter_data(lowpt, eta_upper=2.5,pt_lower=0.5,pt_upper=None)
-    egamma = filter_data(egamma,eta_upper=2.5,pt_lower=0.5,pt_upper=None)
+    lowpt  = filter_data(lowpt, eta_upper=2.5,pt_lower=1.,pt_upper=None)
+    egamma = filter_data(egamma,eta_upper=2.5,pt_lower=1.,pt_upper=None)
 
     eta_upper = 2.5
     pt_lower = 2.0
