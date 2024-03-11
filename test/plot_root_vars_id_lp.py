@@ -21,14 +21,15 @@ def draw_root_var_id_lp(
     has_gsf = (LP.has_gsf) & (np.abs(LP.gsf_eta)<eta_u) & (LP.gsf_pt>pt_l) & (pt_u is None or LP.gsf_pt<pt_u)
     has_ele = (LP.has_ele) & (np.abs(LP.ele_eta)<eta_u) & (LP.ele_pt>pt_l) & (pt_u is None or LP.ele_pt<pt_u)
 
-    feature = kwargs.get('feature','unknown')
+    feature = kwargs.get('feature','Unknown feature')
     branch = feature
     has_obj = has_ele
     s = LP[branch][has_gen&has_obj]
     b = LP[branch][~LP.is_e&has_obj]
     
-    draw_root_score(
+    draw_root_var(
         s,
+        name=f"{feature}_S",
         title='B^{+} #rightarrow K^{+}e^{+}e^{#minus}',
         nbin=kwargs.get('nbin',None),
         xmin=kwargs.get('xmin',None),
@@ -42,9 +43,10 @@ def draw_root_var_id_lp(
         color=r.kGreen+1,
         )
 
-    draw_root_score(
+    draw_root_var(
         b,
         is_data=True,
+        name=f"{feature}_B",
         title='Control data',
         nbin=kwargs.get('nbin',None),
         xmin=kwargs.get('xmin',None),
@@ -63,7 +65,7 @@ def draw_root_var_id_lp(
 
 def plot_root_var(lowpt,egamma,eta_upper,pt_lower,pt_upper=None,**kwargs):
 
-    feature = kwargs.get("feature","Unknown")
+    feature = kwargs.get("feature","Unknown feature")
     
     # Cosmetics
     setTDRStyle()
@@ -96,7 +98,7 @@ def plot_root_var(lowpt,egamma,eta_upper,pt_lower,pt_upper=None,**kwargs):
     legend.SetTextFont(42)
     legend.SetTextSize(size)
     for i,gr in enumerate(graphs):
-        legend.AddEntry(gr.GetName(),gr.GetName(),'l' if 'data' not in gr.GetName() else 'pe')
+        legend.AddEntry(gr.GetName(),gr.GetTitle(),'l' if 'data' not in gr.GetTitle() else 'pe')
     legend.Draw("same")
 
     # Text
@@ -110,8 +112,8 @@ def plot_root_var(lowpt,egamma,eta_upper,pt_lower,pt_upper=None,**kwargs):
     txt.Draw("same")
     
     # Labels and save
-    cmsLabels(c,lumiText='2018 (13 TeV)',extraText='')
-    c.SaveAs(f"output/vars/roc_root_{feature}_id_lp.pdf")
+    #cmsLabels(c,lumiText='2018 (13 TeV)',extraText='')
+    #c.SaveAs(f"output/vars/roc_root_{feature}_id_lp.pdf")
     cmsLabels(c,lumiText='2018 (13 TeV)',extraText='Preliminary')
     c.SaveAs(f"output/vars/roc_root_{feature}_id_lp_prelim.pdf")
 
@@ -122,8 +124,9 @@ def plot_root_vars_id_lp(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
 
     features = [
         # BDT scores
-        {'feature':'ele_mva_value_depth10','xtitle':'Electron ID, BDT score','xunit':None,'nbin':80,'xmin':-20.,'xmax':20.,'ymin':0.,'ymax':0.1,},
-        {'feature':'gsf_bdtout1','xtitle':'Unbiased seed BDT score','xunit':None,'nbin':80,'xmin':-20.,'xmax':20.,'ymin':0.,'ymax':0.2,},
+        {'feature':'ele_mva_value_depth10','xtitle':'Electron ID, BDT score','xunit':None,'nbin':60,'xmin':-15.,'xmax':15.,'ymin':0.,'ymax':0.12,},
+        {'feature':'gsf_bdtout1','xtitle':'Unbiased seed BDT score','xunit':None,'nbin':60,'xmin':-15.,'xmax':15.,'ymin':0.,'ymax':0.12,},
+        {'feature':'gsf_bdtout2','xtitle':'Biased seed BDT score','xunit':None,'nbin':60,'xmin':-15.,'xmax':15.,'ymin':0.,'ymax':0.2,},
         # Kinematic features
         {'feature':'eid_ele_pt','xtitle':'Electron p_{T}','xunit':'GeV','nbin':100,'xmin':0.,'xmax':20.,'ymin':0.,'ymax':0.15,},
         {'feature':'eid_trk_p','xtitle':'Electron track momentum','xunit':'GeV','nbin':100,'xmin':0.,'xmax':20.,'ymin':0.,'ymax':0.15,},
@@ -151,7 +154,6 @@ def plot_root_vars_id_lp(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
         {'feature':'eid_match_eclu_EoverP','xtitle':'Seed cluster E/p','xunit':None,'nbin':100,'xmin':0.,'xmax':1.,'ymin':0.,'ymax':0.06,},
         {'feature':'eid_match_seed_dEta','xtitle':'#Delta#eta(track, seed cluster)','xunit':None,'nbin':100,'xmin':-0.5,'xmax':0.5,'ymin':0.,'ymax':0.25,},
         # Misc
-        {'feature':'gsf_bdtout1','xtitle':'Unbiased seed BDT score','xunit':None,'nbin':80,'xmin':-20.,'xmax':20.,'ymin':0.,'ymax':0.12,},
         {'feature':'eid_rho','xtitle':'#rho','xunit':None,'nbin':100,'xmin':0.,'xmax':50.,'ymin':0.,'ymax':0.1,},
     ]
 

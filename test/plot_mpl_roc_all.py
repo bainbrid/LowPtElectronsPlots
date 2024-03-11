@@ -154,4 +154,4 @@ def plot_mpl_roc_all(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
     print(f'Saving {name}')
     plt.savefig(name)
     plt.clf()
-    plt.close()
+    #plt.close()

@@ -27,28 +27,49 @@ def draw_root_score_id_lp(
     s = LP[branch][has_gen&has_obj]
     b = LP[branch][~LP.is_e&has_obj]
 
-    nbin=60
-    xmin=-40.
+    nbin=80
+    xmin=-20.
     xmax=20.
+    ymin=0.
+    ymax=0.12
     xtitle='Low-p_{T} electron ID, BDT score'
     xunit=None
     style=1
     width=2
-    
-    draw_root_score(
+
+    draw_root_var(
         s,
+        name=f'{__name__}_Signal',
         title='Signal',
-        nbin=nbin,xmin=xmin,xmax=xmax,
-        xtitle=xtitle,xunit=xunit,
-        style=style,width=width,color=r.kGreen+1,
+        #title='B^{+} #rightarrow K^{+}e^{+}e^{#minus}',
+        nbin=nbin,
+        xmin=xmin,
+        xmax=xmax,
+        ymin=ymin,
+        ymax=ymax,
+        xtitle=xtitle,
+        xunit=xunit,
+        style=style,
+        width=width,
+        color=r.kGreen+1,
         )
 
-    draw_root_score(
+    draw_root_var(
         b,
+        #is_data=True,
+        name=f'{__name__}_Background',
         title='Background',
-        nbin=nbin,xmin=xmin,xmax=xmax,
-        xtitle=xtitle,xunit=xunit,
-        style=style,width=width,color=r.kRed,
+        #title='Control data',
+        nbin=nbin,
+        xmin=xmin,
+        xmax=xmax,
+        ymin=ymin,
+        ymax=ymax,
+        xtitle=xtitle,
+        xunit=xunit,
+        style=style,
+        width=width,
+        color=r.kRed,
         same=True
         )
 
@@ -79,22 +100,27 @@ def plot_root_score_id_lp(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
     #c.RedrawAxis()
     
     # Legend
-    graphs = c.GetListOfPrimitives() 
-    xmax = 0.9
-    ymax = 0.9
-    legend = r.TLegend(xmax-0.4,ymax-len(graphs)*0.05,xmax,ymax)
-    legend.SetNColumns(2)
+    xmax = 0.92; ymax = 0.88
+    length = 0.2; height = 0.055; size = 0.045
+    graphs = c.GetListOfPrimitives()
+    legend = r.TLegend(xmax-1.2*length,ymax-len(graphs)*height,xmax,ymax)
+    #legend.SetNColumns(2)
     legend.SetTextFont(42)
-    legend.SetTextSize(0.04)
+    legend.SetTextSize(size)
+    for i,gr in enumerate(graphs):
+        legend.AddEntry(gr.GetName(),gr.GetTitle(),'l' if 'data' not in gr.GetTitle() else 'pe')
+    legend.Draw("same")
 
-    temp = r.TGraph(); temp.SetMarkerColor(r.kWhite)
+    # Text
     text = f"pT > {pt_lower:.1f} GeV" if pt_upper is None else f"{pt_lower:.1f} < pT < {pt_upper:.1f} GeV"
     text = text.replace("pT","p_{T}")
-    legend.AddEntry(temp,text,"p")
+    txt = r.TLatex(0.45,0.83,text)
+    txt.SetNDC(True)
+    txt.SetTextAlign(11)
+    txt.SetTextFont(42)
+    txt.SetTextSize(size)
+    txt.Draw("same")
     
-    for i,gr in enumerate(graphs):
-        legend.AddEntry(gr.GetName(),gr.GetName(),'l')
-    legend.Draw("same")
     
     # Labels and save
     cmsLabels(c,lumiText='2018 (13 TeV)',extraText='')

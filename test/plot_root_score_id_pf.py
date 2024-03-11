@@ -5,7 +5,6 @@ from sklearn.metrics import roc_curve, roc_auc_score
 from plot_root_common import *
 
 ################################################################################
-
 def draw_root_score_id_pf(
     LP,        # lowpt
     EG,        # egamma
@@ -21,11 +20,11 @@ def draw_root_score_id_pf(
     has_gsf = (EG.has_pfgsf) & (EG.pfgsf_pt>pt_l) & (np.abs(EG.pfgsf_eta)<eta_u)
     has_ele = (EG.has_ele)   & (EG.ele_pt>pt_l)   & (np.abs(EG.ele_eta)<eta_u)
 
-    nbin=60
+    nbin=80
     xmin=-20.
-    xmax=10.
+    xmax=20.
     ymin=0.
-    ymax=0.15
+    ymax=0.2
     xtitle='PF electron ID, BDT score'
     xunit=None
 
@@ -35,22 +34,36 @@ def draw_root_score_id_pf(
     s = EG[branch][has_gen&has_obj]
     b = EG[branch][~EG.is_e&has_obj]
     
-    draw_root_score(
+    draw_root_var(
         s,
+        name=f'{__name__}_Signal_Default',
         title='Signal (default)',
-        nbin=nbin,xmin=xmin,xmax=xmax,
-        ymin=ymin,ymax=ymax,
-        xtitle=xtitle,xunit=xunit,
-        style=2,width=2,color=r.kGreen+1,
+        nbin=nbin,
+        xmin=xmin,
+        xmax=xmax,
+        ymin=ymin,
+        ymax=ymax,
+        xtitle=xtitle,
+        xunit=xunit,
+        style=2,
+        width=2,
+        color=r.kGreen+1,
         )
 
-    draw_root_score(
+    draw_root_var(
         b,
+        name=f'{__name__}_Bkgd_Default',
         title='Bkgd (default)',
-        nbin=nbin,xmin=xmin,xmax=xmax,
-        ymin=ymin,ymax=ymax,
-        xtitle=xtitle,xunit=xunit,
-        style=2,width=2,color=r.kRed,
+        nbin=nbin,
+        xmin=xmin,
+        xmax=xmax,
+        ymin=ymin,
+        ymax=ymax,
+        xtitle=xtitle,
+        xunit=xunit,
+        style=2,
+        width=2,
+        color=r.kRed,
         same=True
         )
 
@@ -60,22 +73,35 @@ def draw_root_score_id_pf(
     s = EG[branch][has_gen&has_obj]
     b = EG[branch][~EG.is_e&has_obj]
     
-    draw_root_score(
+    draw_root_var(
         s,
+        name=f'{__name__}_Signal_New',
         title='Signal (new)',
-        nbin=nbin,xmin=xmin,xmax=xmax,
-        ymin=ymin,ymax=ymax,
-        xtitle=xtitle,xunit=xunit,
-        style=1,width=2,color=r.kGreen+1,
+        nbin=nbin,
+        xmin=xmin,
+        xmax=xmax,
+        ymin=ymin,
+        ymax=ymax,
+        xtitle=xtitle,
+        xunit=xunit,
+        style=1,
+        width=2,
+        color=r.kGreen+1,
         same=True
         )
 
-    draw_root_score(
+    draw_root_var(
         b,
+        name=f'{__name__}_Bkgd_New',
         title='Bkgd (new)',
-        nbin=nbin,xmin=xmin,xmax=xmax,
-        xtitle=xtitle,xunit=xunit,
-        style=1,width=2,color=r.kRed,
+        nbin=nbin,
+        xmin=xmin,
+        xmax=xmax,
+        xtitle=xtitle,
+        xunit=xunit,
+        style=1,
+        width=2,
+        color=r.kRed,
         same=True
         )
 
@@ -106,21 +132,26 @@ def plot_root_score_id_pf(lowpt,egamma,eta_upper,pt_lower,pt_upper=None):
     #c.RedrawAxis()
     
     # Legend
+    xmax = 0.92; ymax = 0.88
+    length = 0.2; height = 0.055; size = 0.045
     graphs = c.GetListOfPrimitives()
-    xmin = 0.15
-    ymin = 0.4
-    legend = r.TLegend(xmin,ymin,xmin+0.3,ymin+(len(graphs)+1)*0.07)
+    legend = r.TLegend(xmax-1.2*length,ymax-len(graphs)*height,xmax,ymax)
+    #legend.SetNColumns(2)
     legend.SetTextFont(42)
-    legend.SetTextSize(0.045)
+    legend.SetTextSize(size)
+    for i,gr in enumerate(graphs):
+        legend.AddEntry(gr.GetName(),gr.GetTitle(),'l' if 'data' not in gr.GetTitle() else 'pe')
+    legend.Draw("same")
 
-    temp = r.TGraph(); temp.SetMarkerColor(r.kWhite)
+    # Text
     text = f"pT > {pt_lower:.1f} GeV" if pt_upper is None else f"{pt_lower:.1f} < pT < {pt_upper:.1f} GeV"
     text = text.replace("pT","p_{T}")
-    legend.AddEntry(temp,text,"p")
-    
-    for i,gr in enumerate(graphs):
-        legend.AddEntry(gr.GetName(),gr.GetName(),'l')
-    legend.Draw("same")
+    txt = r.TLatex(0.45,0.83,text)
+    txt.SetNDC(True)
+    txt.SetTextAlign(11)
+    txt.SetTextFont(42)
+    txt.SetTextSize(size)
+    txt.Draw("same")
     
     # Labels and save
     cmsLabels(c,lumiText='2018 (13 TeV)',extraText='')

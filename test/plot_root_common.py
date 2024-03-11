@@ -34,29 +34,31 @@ def draw_root_roc(tpr,fpr,auc,eff=1.,fr=1.,**kwargs):
 
 ################################################################################
 
-def draw_root_score(data,**kwargs):
+def draw_root_var(data,**kwargs):
 
     # Create histo
-    title = kwargs.get('title','draw_root_score')
+    name = kwargs.get('name','Unknown variable')
+    title = kwargs.get('title','Unknown variable') # not used?
     nbin = kwargs.get('nbin',100)
     xmin = kwargs.get('xmin',np.min(data))
     xmax = kwargs.get('xmax',np.max(data))
-    his = r.TH1F(title,'',nbin,xmin,xmax)
-    r.SetOwnership(his,False)
-
+    his = r.TH1F(name,title,nbin,xmin,xmax)
+    his.SetBit(1<<17) # Suppress histogram title (kNoTitle is equiv. to 1<<17)
+    r.SetOwnership(his,False) # So TH1 does not go out of scope when func ends 
+    
     # Fill histo
     for val in data:
         val = min(max(val,xmin+1.e-9),xmax-1.e-9)
         his.Fill(val)
-
+        
     # Axes
     width = ( xmax - xmin ) / nbin
     dp = max(0,int(np.log10(1./width)))
     xtitle = kwargs.get('xtitle','Unknown')
     xunit = kwargs.get('xunit',None)
     ytitle = kwargs.get('ytitle',f'Entries / {width}')
-    if xunit is not None and xunit is not "": xtitle += f" [{xunit}]"
-    if xunit is not None and xunit is not "": ytitle += f" {xunit}"
+    if xunit != None and xunit != "": xtitle += f" [{xunit}]"
+    if xunit != None and xunit != "": ytitle += f" {xunit}"
     his.GetXaxis().SetTitle(xtitle)
     his.GetYaxis().SetTitle(ytitle)
     his.GetYaxis().SetMaxDigits(3)
